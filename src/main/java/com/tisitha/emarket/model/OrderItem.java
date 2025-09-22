@@ -18,7 +18,7 @@ public class OrderItem {
     private String name;
 
     @Column(nullable = false)
-    private UUID productIdl;
+    private UUID productId;
 
     @Column(nullable = false)
     private Double price;
