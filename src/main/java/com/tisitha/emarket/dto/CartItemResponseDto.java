@@ -1,0 +1,24 @@
+package com.tisitha.emarket.dto;
+
+import com.tisitha.emarket.model.Product;
+import com.tisitha.emarket.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CartItemResponseDto {
+
+    private UUID id;
+
+    private User user;
+
+    private Integer quantity;
+
+    private Product product;
+
+}

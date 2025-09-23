@@ -15,7 +15,7 @@ import java.util.UUID;
 public class VendorProfile {
 
     @Id
-    private UUID userId;
+    private UUID vendorId;
 
     @OneToOne
     @MapsId
@@ -33,5 +33,8 @@ public class VendorProfile {
 
     @OneToMany(mappedBy = "vendorProfile")
     private List<Product> products;
+
+    @OneToMany(mappedBy = "vendorProfile")
+    private List<Order> orders;
 
 }

@@ -1,5 +1,6 @@
 package com.tisitha.emarket.service;
 
+import com.tisitha.emarket.dto.ProductGetRequestDto;
 import com.tisitha.emarket.dto.ProductRequestDto;
 import com.tisitha.emarket.dto.ProductResponseDto;
 
@@ -8,7 +9,7 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    List<ProductResponseDto> getProducts();
+    List<ProductResponseDto> getProducts(ProductGetRequestDto productGetRequestDto);
 
     ProductResponseDto getProduct(UUID id);
 

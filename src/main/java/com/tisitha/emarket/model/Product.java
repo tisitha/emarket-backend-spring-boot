@@ -69,5 +69,8 @@ public class Product {
 
     private Integer quantity;
 
+    @OneToMany(mappedBy = "product")
+    private List<Order> orders;
+
 }
 

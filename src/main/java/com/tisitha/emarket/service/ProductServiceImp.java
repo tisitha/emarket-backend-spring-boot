@@ -1,9 +1,13 @@
 package com.tisitha.emarket.service;
 
+import com.tisitha.emarket.dto.ProductGetRequestDto;
 import com.tisitha.emarket.dto.ProductRequestDto;
 import com.tisitha.emarket.dto.ProductResponseDto;
 import com.tisitha.emarket.model.Product;
 import com.tisitha.emarket.repo.ProductRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +23,9 @@ public class ProductServiceImp implements ProductService{
     }
 
     @Override
-    public List<ProductResponseDto> getProducts() {
+    public List<ProductResponseDto> getProducts(ProductGetRequestDto productGetRequestDto) {
+        Sort sort = productGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(productGetRequestDto.getSortBy()).ascending():Sort.by(productGetRequestDto.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(productGetRequestDto.getPageNumber(),productGetRequestDto.getPageSize(),sort);
         List<Product> products = productRepository.findAll();
         return products.stream().map(this::mapProductToProductDto).toList();
     }
@@ -101,7 +107,8 @@ public class ProductServiceImp implements ProductService{
                 productRequestDto.getWarranty(),
                 null,
                 null,
-                productRequestDto.getQuantity()
+                productRequestDto.getQuantity(),
+                null
         );
     }
 }

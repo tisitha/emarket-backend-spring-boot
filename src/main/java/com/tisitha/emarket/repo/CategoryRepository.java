@@ -11,6 +11,6 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
 
     List<Category> findByParentIsNull();
 
-    List<Category> findByParent(Long id);
+    List<Category> findByParentId(Long id);
 
 }

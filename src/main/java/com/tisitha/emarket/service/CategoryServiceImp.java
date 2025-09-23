@@ -61,7 +61,7 @@ public class CategoryServiceImp implements CategoryService{
 
     @Override
     public List<CategoryResponseDto> getSubCategoryTitles(Long id) {
-        List<Category> categories = categoryRepository.findByParent(id);
+        List<Category> categories = categoryRepository.findByParentId(id);
         return categories.stream().map(this::mapCategoryToCategoryDto).toList();
     }
 
