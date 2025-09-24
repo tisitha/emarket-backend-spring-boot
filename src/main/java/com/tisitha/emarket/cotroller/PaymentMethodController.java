@@ -1,10 +1,8 @@
 package com.tisitha.emarket.cotroller;
 
 import com.tisitha.emarket.dto.PaymentMethodRequestDto;
-import com.tisitha.emarket.dto.WarrantyRequestDto;
 import com.tisitha.emarket.dto.PaymentMethodResponseDto;
 import com.tisitha.emarket.service.PaymentMethodService;
-import com.tisitha.emarket.service.WarrantyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

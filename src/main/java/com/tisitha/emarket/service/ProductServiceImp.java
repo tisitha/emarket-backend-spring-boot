@@ -1,33 +1,53 @@
 package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.ProductGetRequestDto;
+import com.tisitha.emarket.dto.ProductPageSortDto;
 import com.tisitha.emarket.dto.ProductRequestDto;
 import com.tisitha.emarket.dto.ProductResponseDto;
-import com.tisitha.emarket.model.Product;
-import com.tisitha.emarket.repo.ProductRepository;
+import com.tisitha.emarket.model.*;
+import com.tisitha.emarket.repo.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.OptionalDouble;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImp implements ProductService{
 
     private final ProductRepository productRepository;
-
-    public ProductServiceImp(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    private final VendorProfileRepository vendorProfileRepository;
+    private final WarrantyRepository warrantyRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProvinceRepository provinceRepository;
 
     @Override
-    public List<ProductResponseDto> getProducts(ProductGetRequestDto productGetRequestDto) {
+    public ProductPageSortDto getProducts(ProductGetRequestDto productGetRequestDto) {
         Sort sort = productGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(productGetRequestDto.getSortBy()).ascending():Sort.by(productGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(productGetRequestDto.getPageNumber(),productGetRequestDto.getPageSize(),sort);
-        List<Product> products = productRepository.findAll();
-        return products.stream().map(this::mapProductToProductDto).toList();
+        Page<Product> productsPage = productRepository.findAllByCategoryIdAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqual(
+                productGetRequestDto.getCategoryId(),
+                productGetRequestDto.isFreeDelivery()?List.of(true):List.of(true,false),
+                productGetRequestDto.isCod()?List.of(true):List.of(true,false),
+                productGetRequestDto.getProvinceIds(),
+                productGetRequestDto.getWarrantyIds(),
+                productGetRequestDto.getMinPrice(),
+                productGetRequestDto.getMaxPrice(),
+                pageable
+        );
+        List<Product> products = productsPage.getContent();
+        return new ProductPageSortDto(
+                products.stream().map(this::mapProductToProductDto).toList(),
+                productsPage.getTotalElements(),
+                productsPage.getTotalPages(),
+                productsPage.isLast()
+        );
     }
 
     @Override
@@ -38,8 +58,12 @@ public class ProductServiceImp implements ProductService{
 
     @Override
     public ProductResponseDto updateProduct(UUID id,ProductRequestDto productRequestDto) {
+        VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(()->new RuntimeException());
+        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(()->new RuntimeException());
+        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(()->new RuntimeException());
+        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(()->new RuntimeException());
         Product product = productRepository.findById(id).orElseThrow(()->new RuntimeException());
-        product.setVendorProfile(productRequestDto.getVendorProfile());
+        product.setVendorProfile(vendorProfile);
         product.setName(productRequestDto.getName());
         product.setImgUrl(productRequestDto.getImgUrl());
         product.setDescription(productRequestDto.getDescription());
@@ -48,9 +72,9 @@ public class ProductServiceImp implements ProductService{
         product.setCod(productRequestDto.isCod());
         product.setFreeDelivery(productRequestDto.isFreeDelivery());
         product.setBrand(productRequestDto.getBrand());
-        product.setCategory(productRequestDto.getCategory());
-        product.setProvince(productRequestDto.getProvince());
-        product.setWarranty(productRequestDto.getWarranty());
+        product.setCategory(category);
+        product.setProvince(province);
+        product.setWarranty(warranty);
         Product newProduct = productRepository.save(product);
         return mapProductToProductDto(newProduct);
     }
@@ -68,6 +92,9 @@ public class ProductServiceImp implements ProductService{
     }
 
     private ProductResponseDto mapProductToProductDto(Product product){
+        OptionalDouble average = product.getReviews().stream()
+                .mapToInt(Review::getRate)
+                .average();
         return new ProductResponseDto(
                 product.getId(),
                 product.getVendorProfile(),
@@ -81,6 +108,7 @@ public class ProductServiceImp implements ProductService{
                 product.getBrand(),
                 product.getCategory(),
                 product.getReviews(),
+                average.isPresent()?average.getAsDouble():null,
                 product.getProvince(),
                 product.getWarranty(),
                 product.getQuestions(),
@@ -90,9 +118,13 @@ public class ProductServiceImp implements ProductService{
     }
 
     private Product mapProductDtoToProduct(ProductRequestDto productRequestDto){
+        VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(()->new RuntimeException());
+        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(()->new RuntimeException());
+        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(()->new RuntimeException());
+        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(()->new RuntimeException());
         return new Product(
                 productRequestDto.getId(),
-                productRequestDto.getVendorProfile(),
+                vendorProfile,
                 productRequestDto.getName(),
                 productRequestDto.getImgUrl(),
                 productRequestDto.getDescription(),
@@ -101,10 +133,10 @@ public class ProductServiceImp implements ProductService{
                 productRequestDto.isCod(),
                 productRequestDto.isFreeDelivery(),
                 productRequestDto.getBrand(),
-                productRequestDto.getCategory(),
+                category,
                 null,
-                productRequestDto.getProvince(),
-                productRequestDto.getWarranty(),
+                province,
+                warranty,
                 null,
                 null,
                 productRequestDto.getQuantity(),

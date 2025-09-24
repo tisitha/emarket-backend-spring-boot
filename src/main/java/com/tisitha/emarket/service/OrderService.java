@@ -11,7 +11,7 @@ public interface OrderService {
 
     OrderResponseDto getOrder(UUID orderId);
 
-    void addOrder(OrderRequestDto orderRequestDto);
+    OrderResponseDto addOrder(OrderRequestDto orderRequestDto);
 
     List<OrderResponseDto> getOrdersByVendor(UUID vendorId);
 

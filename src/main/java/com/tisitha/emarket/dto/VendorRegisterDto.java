@@ -1,0 +1,31 @@
+package com.tisitha.emarket.dto;
+
+import lombok.Data;
+
+import java.util.UUID;
+
+@Data
+public class VendorRegisterDto {
+
+    private UUID id;
+
+    private String fname;
+
+    private String lname;
+
+    private String email;
+
+    private String password;
+
+    private String passwordRepeat;
+
+    private String phoneNo;
+
+    private String address;
+
+    private Long provinceId;
+
+    private VendorProfileDto vendorProfileDto;
+
+
+}

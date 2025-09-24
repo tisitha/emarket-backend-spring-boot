@@ -29,10 +29,10 @@ public class OrderServiceImp implements OrderService{
     }
 
     @Override
-    public void addOrder(OrderRequestDto orderRequestDto) {
+    public OrderResponseDto addOrder(OrderRequestDto orderRequestDto) {
         List<CartItem> cartItems = cartItemRepository.findAllByUserId(orderRequestDto.getUserId());
+        Order order = new Order();
         for (CartItem cartItem: cartItems){
-            Order order = new Order();
             order.setUser(cartItem.getUser());
             order.setOrderStatus(OrderStatus.PENDING);
             order.setPaymentMethod(orderRequestDto.getPaymentMethod());
@@ -45,8 +45,9 @@ public class OrderServiceImp implements OrderService{
             double deliveryCost = cartItem.getProduct().isFreeDelivery()?0.0:250.0;
             order.setDeliveryCost(deliveryCost);
             order.setTotalCost(cost+deliveryCost);
-            orderRepository.save(order);
         }
+        Order newOrder = orderRepository.save(order);
+        return mapOrderToOrderDto(newOrder);
     }
 
     @Override

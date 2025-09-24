@@ -3,6 +3,7 @@ package com.tisitha.emarket.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -22,16 +23,20 @@ public class ProductGetRequestDto {
     @Pattern(regexp = "asc|desc", flags = Pattern.Flag.CASE_INSENSITIVE, message = "dir must be either 'asc' or 'desc'")
     private String dir;
 
-    private UUID category;
+    private Long categoryId;
 
     private boolean freeDelivery;
 
     private boolean cod;
 
-    private UUID provinceId;
+    private List<Long> provinceIds;
 
-    private UUID warrantyId;
+    private List<Long> warrantyIds;
 
     private UUID vendorId;
+
+    private double minPrice;
+
+    private double maxPrice;
 
 }

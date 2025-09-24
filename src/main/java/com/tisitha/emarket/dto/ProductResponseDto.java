@@ -37,6 +37,8 @@ public class ProductResponseDto {
 
     private List<Review> reviews;
 
+    private Double avgRatings;
+
     private Province province;
 
     private Warranty warranty;

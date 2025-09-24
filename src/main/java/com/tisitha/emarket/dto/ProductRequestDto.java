@@ -1,6 +1,5 @@
 package com.tisitha.emarket.dto;
 
-import com.tisitha.emarket.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,7 @@ public class ProductRequestDto {
 
     private UUID id;
 
-    private VendorProfile vendorProfile;
+    private UUID vendorProfileId;
 
     private String name;
 
@@ -32,11 +31,11 @@ public class ProductRequestDto {
 
     private String brand;
 
-    private Category category;
+    private Long categoryId;
 
-    private Province province;
+    private Long provinceId;
 
-    private Warranty warranty;
+    private Long warrantyId;
 
     private Integer quantity;
 
