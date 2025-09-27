@@ -5,6 +5,7 @@ import com.tisitha.emarket.dto.CartItemResponseDto;
 import com.tisitha.emarket.service.CartItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,23 +22,23 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<CartItemResponseDto> addToCart(@RequestBody CartItemRequestDto cartItemRequestDto){
-        return new ResponseEntity<>(cartItemService.addCartItem(cartItemRequestDto), HttpStatus.CREATED);
+    public ResponseEntity<CartItemResponseDto> addToCart(@RequestBody CartItemRequestDto cartItemRequestDto, Authentication authentication){
+        return new ResponseEntity<>(cartItemService.addCartItem(cartItemRequestDto,authentication), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{userID}")
-    public ResponseEntity<List<CartItemResponseDto>> getCart(@PathVariable UUID userID){
-        return new ResponseEntity<>(cartItemService.getCartByUser(userID),HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<CartItemResponseDto>> getCart(Authentication authentication){
+        return new ResponseEntity<>(cartItemService.getCartByUser(authentication),HttpStatus.OK);
     }
 
     @PutMapping("/{cartItemId}")
-    public ResponseEntity<CartItemResponseDto> updateCart(@PathVariable UUID cartItemId,@RequestBody CartItemRequestDto cartItemRequestDto){
-        return new ResponseEntity<>(cartItemService.updateCartItem(cartItemId,cartItemRequestDto),HttpStatus.OK);
+    public ResponseEntity<CartItemResponseDto> updateCart(@PathVariable UUID cartItemId,@RequestBody CartItemRequestDto cartItemRequestDto, Authentication authentication){
+        return new ResponseEntity<>(cartItemService.updateCartItem(cartItemId,cartItemRequestDto,authentication),HttpStatus.OK);
     }
 
     @DeleteMapping("/{cartItemId}")
-    public ResponseEntity<Void> deleteCartItem(@PathVariable UUID cartItemId){
-        cartItemService.deleteCartItem(cartItemId);
+    public ResponseEntity<Void> deleteCartItem(@PathVariable UUID cartItemId, Authentication authentication){
+        cartItemService.deleteCartItem(cartItemId,authentication);
         return ResponseEntity.ok().build();
     }
 

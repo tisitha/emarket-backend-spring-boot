@@ -1,6 +1,7 @@
 package com.tisitha.emarket.config;
 
 import com.tisitha.emarket.filter.JwtAuthFilter;
+import com.tisitha.emarket.model.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +36,8 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**","/api/open/**").permitAll()
+                        .requestMatchers("/api/amin/**").hasRole(Role.ADMIN.toString())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

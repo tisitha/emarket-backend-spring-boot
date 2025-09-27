@@ -7,12 +7,13 @@ import com.tisitha.emarket.dto.OrderResponseDto;
 import com.tisitha.emarket.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping("/api")
 public class OrderController {
 
     private final OrderService orderService;
@@ -21,40 +22,40 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponseDto> getOrder(@PathVariable UUID orderId) {
-        return new ResponseEntity<>(orderService.getOrder(orderId), HttpStatus.OK);
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<OrderResponseDto> getOrder(@PathVariable UUID orderId, Authentication authentication) {
+        return new ResponseEntity<>(orderService.getOrder(orderId,authentication), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Void> addOrder(@RequestBody OrderRequestDto orderRequestDto) {
-        orderService.addOrder(orderRequestDto);
+    @PostMapping("/order")
+    public ResponseEntity<Void> addOrder(@RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
+        orderService.addOrder(orderRequestDto,authentication);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/vendor")
-    public  ResponseEntity<OrderPageSortDto> getOrdersByVendor(@RequestBody OrderGetRequestDto orderGetRequestDto) {
-        return new ResponseEntity<>(orderService.getOrdersByVendor(orderGetRequestDto),HttpStatus.OK);
+    @GetMapping("/order/vendor")
+    public  ResponseEntity<OrderPageSortDto> getOrdersByVendor(@RequestBody OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
+        return new ResponseEntity<>(orderService.getOrdersByVendor(orderGetRequestDto,authentication),HttpStatus.OK);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<OrderPageSortDto> getOrdersByUser(@RequestBody OrderGetRequestDto orderGetRequestDto) {
-        return new ResponseEntity<>(orderService.getOrdersByUser(orderGetRequestDto),HttpStatus.OK);
+    @GetMapping("/order/user")
+    public ResponseEntity<OrderPageSortDto> getOrdersByUser(@RequestBody OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
+        return new ResponseEntity<>(orderService.getOrdersByUser(orderGetRequestDto,authentication),HttpStatus.OK);
     }
 
-    @PutMapping("/update/{orderId}")
-    public ResponseEntity<OrderResponseDto> ChangeOrderStatus(@PathVariable UUID orderId) {
-        return new ResponseEntity<>(orderService.changeOrderStatus(orderId),HttpStatus.CREATED);
+    @PutMapping("/order/update/{orderId}")
+    public ResponseEntity<OrderResponseDto> ChangeOrderStatus(@PathVariable UUID orderId, Authentication authentication) {
+        return new ResponseEntity<>(orderService.changeOrderStatus(orderId,authentication),HttpStatus.CREATED);
     }
 
-    @PutMapping("/deliver/{orderId}")
+    @PutMapping("/admin/order/deliver/{orderId}")
     public  ResponseEntity<OrderResponseDto> deliveredOrder(@PathVariable UUID orderId) {
         return new ResponseEntity<>(orderService.deliveredOrder(orderId),HttpStatus.CREATED);
     }
 
-    @PutMapping("/cancel/{orderId}")
-    public  ResponseEntity<OrderResponseDto> cancelOrder(@PathVariable UUID orderId) {
-        return new ResponseEntity<>(orderService.cancelOrder(orderId),HttpStatus.CREATED);
+    @PutMapping("/order/cancel/{orderId}")
+    public  ResponseEntity<OrderResponseDto> cancelOrder(@PathVariable UUID orderId, Authentication authentication) {
+        return new ResponseEntity<>(orderService.cancelOrder(orderId,authentication),HttpStatus.CREATED);
     }
 
 }

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,10 +45,10 @@ public class QuestionServiceImp implements QuestionService{
     }
 
     @Override
-    public QuestionPageSortDto getUnansweredQuestionTitles(QuestionGetRequestDto questionGetRequestDto) {
+    public QuestionPageSortDto getUnansweredQuestionTitles(QuestionGetRequestDto questionGetRequestDto, Authentication authentication) {
         Sort sort = questionGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(questionGetRequestDto.getSortBy()).ascending():Sort.by(questionGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(questionGetRequestDto.getPageNumber(),questionGetRequestDto.getPageSize(),sort);
-        Page<Question> questions =questionRepository.findAllByProductIdAndAnswerIsNull(questionGetRequestDto.getProductId(),pageable);
+        Page<Question> questions =questionRepository.findAllByProductVendorProfileEmailAndAnswerIsNull(authentication.getName(),pageable);
         return new QuestionPageSortDto(
                 questions.getContent().stream().map(this::mapQuestionToQuestionDto).toList(),
                 questions.getTotalElements(),
@@ -87,8 +88,8 @@ public class QuestionServiceImp implements QuestionService{
 
     @Override
     @Transactional
-    public QuestionResponseDto updateQuestionTitle(Long questionId, QuestionRequestDto questionRequestDto) {
-        Question question =questionRepository.findById(questionId).orElseThrow(()->new RuntimeException(""));
+    public QuestionResponseDto updateQuestionTitle(Long questionId, QuestionRequestDto questionRequestDto,Authentication authentication) {
+        Question question =questionRepository.findByIdAndProductVendorProfileEmail(questionId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
         question.setAnswer(questionRequestDto.getAnswer());
         Question newQuestion = questionRepository.save(question);
         Notification notification = new Notification();
@@ -103,7 +104,7 @@ public class QuestionServiceImp implements QuestionService{
     }
 
     @Override
-    public void deleteQuestionTitle(Long questionId) {
+    public void deleteQuestionTitle(Long questionId,Authentication authentication) {
         questionRepository.findById(questionId).orElseThrow(()->new RuntimeException(""));
         questionRepository.deleteById(questionId);
     }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -82,7 +83,18 @@ public class ProductServiceImp implements ProductService{
     }
 
     @Override
-    public ProductResponseDto updateProduct(UUID id,ProductRequestDto productRequestDto) {
+    public List<ProductResponseDto> search(String text,int size) {
+        Pageable pageable = PageRequest.of(0,size);
+        Page<Product> products = productRepository.findByNameContainingIgnoreCase(text,pageable);
+        return products.getContent().stream().map(this::mapProductToProductDto).toList();
+    }
+
+    @Override
+    public ProductResponseDto updateProduct(UUID id,ProductRequestDto productRequestDto,Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        if(user.getId()!=productRequestDto.getVendorProfileId()){
+            throw new RuntimeException("");
+        }
         VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(()->new RuntimeException());
         Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(()->new RuntimeException());
         Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(()->new RuntimeException());
@@ -105,14 +117,18 @@ public class ProductServiceImp implements ProductService{
     }
 
     @Override
-    public ProductResponseDto addProduct(ProductRequestDto productRequestDto) {
+    public ProductResponseDto addProduct(ProductRequestDto productRequestDto,Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        if(user.getId()!=productRequestDto.getVendorProfileId()){
+            throw new RuntimeException("");
+        }
         Product newProduct = productRepository.save(mapProductDtoToProduct(productRequestDto));
         return mapProductToProductDto(newProduct);
     }
 
     @Override
-    public void deleteProduct(UUID id) {
-        productRepository.findById(id).orElseThrow(()->new RuntimeException());
+    public void deleteProduct(UUID id,Authentication authentication) {
+        productRepository.findByIdAndVendorProfileUserEmail(id,authentication.getName()).orElseThrow(()->new RuntimeException());
         productRepository.deleteById(id);
     }
 

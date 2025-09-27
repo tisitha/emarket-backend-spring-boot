@@ -17,6 +17,4 @@ public class ReviewRequestDto {
 
     private UUID productId;
 
-    private UUID userId;
-
 }

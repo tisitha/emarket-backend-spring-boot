@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +49,13 @@ public class ReviewServiceImp implements ReviewService{
 
     @Override
     @Transactional
-    public ReviewResponseDto addReviewTitle(ReviewRequestDto reviewRequestDto) {
-        reviewPassRepository.deleteByUserIdAndProductId(reviewRequestDto.getUserId(),reviewRequestDto.getProductId());
+    public ReviewResponseDto addReviewTitle(ReviewRequestDto reviewRequestDto, Authentication authentication) {
+        if(!reviewPassRepository.existsByProductIdUserEmail(reviewRequestDto.getProductId(),authentication.getName())){
+            throw new RuntimeException("");
+        }
+        reviewPassRepository.deleteByUserEmailAndProductId(authentication.getName(),reviewRequestDto.getProductId());
         Product product = productRepository.findById(reviewRequestDto.getProductId()).orElseThrow(()->new RuntimeException(""));
-        User user = userRepository.findById(reviewRequestDto.getUserId()).orElseThrow(()->new RuntimeException(""));
+        User user = (User) authentication.getPrincipal();
         Review review = new Review();
         review.setBody(reviewRequestDto.getBody());
         review.setRate(reviewRequestDto.getRate());
@@ -72,8 +76,8 @@ public class ReviewServiceImp implements ReviewService{
     }
 
     @Override
-    public ReviewResponseDto updateReviewTitle(Long reviewId, ReviewRequestDto reviewRequestDto) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException(""));
+    public ReviewResponseDto updateReviewTitle(Long reviewId, ReviewRequestDto reviewRequestDto, Authentication authentication) {
+        Review review = reviewRepository.findByIdAndUserEmail(reviewId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
         review.setBody(reviewRequestDto.getBody());
         review.setRate(reviewRequestDto.getRate());
         review.setEdited(true);
@@ -82,8 +86,8 @@ public class ReviewServiceImp implements ReviewService{
     }
 
     @Override
-    public void deleteReviewTitle(Long reviewId) {
-        reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException(""));
+    public void deleteReviewTitle(Long reviewId, Authentication authentication) {
+        reviewRepository.findByIdAndUserEmail(reviewId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
         reviewRepository.deleteById(reviewId);
     }
 

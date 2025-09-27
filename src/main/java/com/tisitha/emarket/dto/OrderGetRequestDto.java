@@ -22,5 +22,4 @@ public class OrderGetRequestDto {
     @Pattern(regexp = "asc|desc", flags = Pattern.Flag.CASE_INSENSITIVE, message = "dir must be either 'asc' or 'desc'")
     private String dir;
 
-    private UUID userVendorId;
 }

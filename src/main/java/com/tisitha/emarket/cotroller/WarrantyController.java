@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/warranty")
+@RequestMapping("/api")
 @RestController
 public class WarrantyController {
 
@@ -19,22 +19,22 @@ public class WarrantyController {
         this.warrantyService = warrantyService;
     }
 
-    @GetMapping
+    @GetMapping("/open/warranty")
     public ResponseEntity<List<WarrantyResponseDto>> getWarrantyTypes(){
         return new ResponseEntity<>(warrantyService.getWarrantyTitles(), HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("/admin/warranty")
     public ResponseEntity<WarrantyResponseDto> addWarrantyType(@RequestBody WarrantyRequestDto warrantyRequestDto){
         return new ResponseEntity<>(warrantyService.addWarrantyTitle(warrantyRequestDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/warranty/{id}")
     public ResponseEntity<WarrantyResponseDto> editWarrantyType(@PathVariable Long warrantyId,@RequestBody WarrantyRequestDto warrantyRequestDto){
         return new ResponseEntity<>(warrantyService.updateWarrantyTitle(warrantyId,warrantyRequestDto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/warranty/{id}")
     public ResponseEntity<Void> deleteWarrantyType(@PathVariable Long warrantyId){
         warrantyService.deleteWarrantyTitle(warrantyId);
         return ResponseEntity.ok().build();

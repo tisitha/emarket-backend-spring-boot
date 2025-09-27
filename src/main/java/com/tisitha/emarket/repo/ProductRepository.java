@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -33,4 +34,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             int minQuantity,
             UUID vendorProfileId,
             Pageable pageable);
+
+    Optional<Object> findByIdAndVendorProfileUserEmail(UUID id, String email);
+
+    Page<Product> findByNameContainingIgnoreCase(String text, Pageable pageable);
 }

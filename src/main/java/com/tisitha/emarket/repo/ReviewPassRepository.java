@@ -12,4 +12,8 @@ public interface ReviewPassRepository extends JpaRepository<ReviewPass, UUID> {
     Boolean existsByUserIdAndProductId(UUID userId, UUID productId);
 
     void deleteByUserIdAndProductId(UUID userId, UUID productId);
+
+    Boolean existsByProductIdUserEmail(UUID productId,String email);
+
+    void deleteByUserEmailAndProductId(String email, UUID productId);
 }

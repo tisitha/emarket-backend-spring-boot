@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
@@ -21,52 +21,52 @@ public class UserController {
         this.forgotPasswordService = forgotPasswordService;
     }
 
-    @PostMapping("/register-user")
+    @PostMapping("/auth/register-user")
     public void registerUserAccount(@RequestBody UserRegisterDto userRegisterDto){
         userService.registerUserAccount(userRegisterDto);
     }
 
-    @PostMapping("/register-vendor")
+    @PostMapping("/auth/register-vendor")
     public void registerVendorAccount(@RequestBody VendorRegisterDto vendorRegisterDto){
         userService.registerVendorAccount(vendorRegisterDto);
     }
 
-    @GetMapping("/login")
+    @GetMapping("/auth/login")
     public ResponseEntity<String> loginAccount(@RequestBody LoginDto loginDto){
         return new ResponseEntity<>(userService.loginAccount(loginDto), HttpStatus.OK);
     }
 
-    @PostMapping("/verifymail/{email}")
+    @PostMapping("/auth/verifymail/{email}")
     public ResponseEntity<Void> verifyEmail(@PathVariable String email){
         forgotPasswordService.verifyEmail(email);
         return ResponseEntity.ok().build();
 
     }
-    @PostMapping("/varifyotp/{otp}/{email}")
+    @PostMapping("/auth/varifyotp/{otp}/{email}")
     public ResponseEntity<Void> verifyOtp(@PathVariable Integer otp,@PathVariable String email){
         forgotPasswordService.verifyOtp(otp,email);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/changepassword/{otp}/{email}")
+    @PostMapping("/auth/changepassword/{otp}/{email}")
     public ResponseEntity<Void> changePasswordHandler(@RequestBody ChangePasswordDto changePasswordDto, @PathVariable Integer otp, @PathVariable String email){
         forgotPasswordService.changePasswordHandler(changePasswordDto,otp,email);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/user-update/{id}")
+    @PutMapping("/user/user-update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO) {
         userService.updateUser(id,userUpdateDTO);
         return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
     }
 
-    @PutMapping("/vendor-update/{id}")
+    @PutMapping("/user/vendor-update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable UUID id, @RequestBody VendorUpdateDto vendorUpdateDto) {
         userService.updateVendor(id,vendorUpdateDto);
         return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
     }
 
-    @DeleteMapping("/user-delete/{id}")
+    @DeleteMapping("/user/user-delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id, @RequestBody PasswordDTO pass) {
         userService.deleteUser(id,pass);
         return new ResponseEntity<>("successfully account deleted",HttpStatus.OK);

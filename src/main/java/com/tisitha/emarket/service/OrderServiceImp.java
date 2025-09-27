@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +30,18 @@ public class OrderServiceImp implements OrderService{
     private final NotificationRepository notificationRepository;
 
     @Override
-    public OrderResponseDto getOrder(UUID orderId) {
+    public OrderResponseDto getOrder(UUID orderId, Authentication authentication) {
         Order order = orderRepository.findById(orderId).orElseThrow(()->new RuntimeException(""));
+        if(!order.getUser().getEmail().equals(authentication.getName()) && !order.getVendorProfile().getUser().getEmail().equals(authentication.getName())){
+            throw new RuntimeException("");
+        }
         return mapOrderToOrderDto(order);
     }
 
     @Override
     @Transactional
-    public void addOrder(OrderRequestDto orderRequestDto) {
-        List<CartItem> cartItems = cartItemRepository.findAllByUserId(orderRequestDto.getUserId());
+    public void addOrder(OrderRequestDto orderRequestDto, Authentication authentication) {
+        List<CartItem> cartItems = cartItemRepository.findAllByUserEmail(authentication.getName());
         for (CartItem cartItem: cartItems){
             Order order = new Order();
             order.setUser(cartItem.getUser());
@@ -76,25 +80,25 @@ public class OrderServiceImp implements OrderService{
     }
 
     @Override
-    public OrderPageSortDto getOrdersByVendor(OrderGetRequestDto orderGetRequestDto) {
+    public OrderPageSortDto getOrdersByVendor(OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
         Sort sort = orderGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(orderGetRequestDto.getSortBy()).ascending():Sort.by(orderGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(orderGetRequestDto.getPageNumber(),orderGetRequestDto.getPageSize(),sort);
-        Page<Order> orders = orderRepository.findAllByVendorProfileVendorId(orderGetRequestDto.getUserVendorId(),pageable);
+        Page<Order> orders = orderRepository.findAllByVendorProfileUserEmail(authentication.getName(),pageable);
         return new OrderPageSortDto(orders.getContent().stream().map(this::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
     }
 
     @Override
-    public OrderPageSortDto getOrdersByUser(OrderGetRequestDto orderGetRequestDto) {
+    public OrderPageSortDto getOrdersByUser(OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
         Sort sort = orderGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(orderGetRequestDto.getSortBy()).ascending():Sort.by(orderGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(orderGetRequestDto.getPageNumber(),orderGetRequestDto.getPageSize(),sort);
-        Page<Order> orders = orderRepository.findAllByUserId(orderGetRequestDto.getUserVendorId(),pageable);
+        Page<Order> orders = orderRepository.findAllByUserEmail(authentication.getName(),pageable);
         return new OrderPageSortDto(orders.getContent().stream().map(this::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
     }
 
     @Override
     @Transactional
-    public OrderResponseDto changeOrderStatus(UUID orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(()->new RuntimeException(""));
+    public OrderResponseDto changeOrderStatus(UUID orderId, Authentication authentication) {
+        Order order = orderRepository.findByIdAndVendorProfileUserEmail(authentication.getName()).orElseThrow(()->new RuntimeException(""));
         OrderStatus newOrderStatus;
         if(order.getOrderStatus()==OrderStatus.PENDING){
             newOrderStatus = OrderStatus.PROCESSING;
@@ -152,9 +156,12 @@ public class OrderServiceImp implements OrderService{
 
     @Override
     @Transactional
-    public OrderResponseDto cancelOrder(UUID orderId) {
+    public OrderResponseDto cancelOrder(UUID orderId, Authentication authentication) {
         Order order = orderRepository.findById(orderId).orElseThrow(()->new RuntimeException(""));
         if(order.getOrderStatus()==OrderStatus.CANCELLED || order.getOrderStatus()==OrderStatus.DELIVERED){
+            throw new RuntimeException("");
+        }
+        if(!order.getUser().getEmail().equals(authentication.getName()) && !order.getVendorProfile().getUser().getEmail().equals(authentication.getName())){
             throw new RuntimeException("");
         }
         Notification notification = new Notification();

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/province")
+@RequestMapping("/api")
 public class ProvinceController {
 
     private final ProvinceService provinceService;
@@ -19,22 +19,22 @@ public class ProvinceController {
         this.provinceService = provinceService;
     }
 
-    @GetMapping
+    @GetMapping("/open/province")
     public ResponseEntity<List<ProvinceResponseDto>> getProvinces(){
         return new ResponseEntity<>(provinceService.getProvinceTitles(), HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("admin/province")
     public ResponseEntity<ProvinceResponseDto> addProvince(@RequestBody ProvinceRequestDto provinceRequestDto){
         return new ResponseEntity<>(provinceService.addProvinceTitle(provinceRequestDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("admin/province/{id}")
     public ResponseEntity<ProvinceResponseDto> editProvince(@PathVariable Long provinceId, @RequestBody ProvinceRequestDto provinceRequestDto){
         return new ResponseEntity<>(provinceService.updateProvinceTitle(provinceId,provinceRequestDto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("admin/province/{id}")
     public ResponseEntity<Void> deleteProvince(@PathVariable Long provinceId){
         provinceService.deleteProvinceTitle(provinceId);
         return ResponseEntity.ok().build();

@@ -7,10 +7,11 @@ import com.tisitha.emarket.dto.ReviewResponseDto;
 import com.tisitha.emarket.service.ReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/review")
+@RequestMapping("/api")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -19,24 +20,24 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @GetMapping
+    @GetMapping("/open/review")
     public ResponseEntity<ReviewPageSortDto> getReviewTitles(@RequestBody ReviewGetRequestDto reviewGetRequestDto) {
         return new ResponseEntity<>(reviewService.getReviewTitles(reviewGetRequestDto), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<ReviewResponseDto> addReviewTitle(@RequestBody ReviewRequestDto reviewRequestDto) {
-        return new ResponseEntity<>(reviewService.addReviewTitle(reviewRequestDto),HttpStatus.CREATED);
+    @PostMapping("/review")
+    public ResponseEntity<ReviewResponseDto> addReviewTitle(@RequestBody ReviewRequestDto reviewRequestDto, Authentication authentication) {
+        return new ResponseEntity<>(reviewService.addReviewTitle(reviewRequestDto,authentication),HttpStatus.CREATED);
     }
 
-    @PutMapping("/{reviewId}")
-    public ResponseEntity<ReviewResponseDto> updateReviewTitle(@PathVariable Long reviewId,@RequestBody ReviewRequestDto reviewRequestDto) {
-        return new ResponseEntity<>(reviewService.updateReviewTitle(reviewId,reviewRequestDto),HttpStatus.CREATED);
+    @PutMapping("/review/{reviewId}")
+    public ResponseEntity<ReviewResponseDto> updateReviewTitle(@PathVariable Long reviewId,@RequestBody ReviewRequestDto reviewRequestDto, Authentication authentication) {
+        return new ResponseEntity<>(reviewService.updateReviewTitle(reviewId,reviewRequestDto,authentication),HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteReviewTitle(@PathVariable Long reviewId) {
-        reviewService.deleteReviewTitle(reviewId);
+    @DeleteMapping("/review/{reviewId}")
+    public ResponseEntity<Void> deleteReviewTitle(@PathVariable Long reviewId, Authentication authentication) {
+        reviewService.deleteReviewTitle(reviewId,authentication);
         return ResponseEntity.ok().build();
     }
 

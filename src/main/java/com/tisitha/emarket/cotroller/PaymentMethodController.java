@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/paymentmethod")
+@RequestMapping("/api")
 public class PaymentMethodController {
 
     private final PaymentMethodService paymentMethodService;
@@ -19,22 +19,22 @@ public class PaymentMethodController {
         this.paymentMethodService = paymentMethodService;
     }
 
-    @GetMapping
+    @GetMapping("/open/paymentmethod")
     public ResponseEntity<List<PaymentMethodResponseDto>> getPaymentMethods(){
         return new ResponseEntity<>(paymentMethodService.getPaymentMethodTitles(), HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("/admin/paymentmethod")
     public ResponseEntity<PaymentMethodResponseDto> addPaymentMethod(@RequestBody PaymentMethodRequestDto paymentMethodRequestDto){
         return new ResponseEntity<>(paymentMethodService.addPaymentMethodTitle(paymentMethodRequestDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/paymentmethod/{id}")
     public ResponseEntity<PaymentMethodResponseDto> editPaymentMethod(@PathVariable Long pmId,@RequestBody PaymentMethodRequestDto paymentMethodRequestDto){
         return new ResponseEntity<>(paymentMethodService.updatePaymentMethodTitle(pmId,paymentMethodRequestDto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/paymentmethod/{id}")
     public ResponseEntity<Void> deletePaymentMethod(@PathVariable Long pmId){
         paymentMethodService.deletePaymentMethodTitle(pmId);
         return ResponseEntity.ok().build();
