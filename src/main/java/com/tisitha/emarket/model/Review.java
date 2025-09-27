@@ -19,12 +19,6 @@ public class Review {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID uid;
-
-    @Column(nullable = false)
-    private UUID pid;
-
-    @Column(nullable = false)
     private String body;
 
     @Column(nullable = false)

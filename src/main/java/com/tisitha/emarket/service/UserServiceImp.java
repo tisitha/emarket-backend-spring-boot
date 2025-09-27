@@ -1,8 +1,6 @@
 package com.tisitha.emarket.service;
 
-import com.tisitha.emarket.dto.LoginDto;
-import com.tisitha.emarket.dto.UserRegisterDto;
-import com.tisitha.emarket.dto.VendorRegisterDto;
+import com.tisitha.emarket.dto.*;
 import com.tisitha.emarket.model.Province;
 import com.tisitha.emarket.model.Role;
 import com.tisitha.emarket.model.User;
@@ -18,6 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -74,9 +75,9 @@ public class UserServiceImp implements UserService{
         System.out.println(vendorRegisterDto);
         VendorProfile vendorProfile = new VendorProfile();
         vendorProfile.setUser(newUser);
-        vendorProfile.setBusinessName(vendorRegisterDto.getVendorProfileDto().getBusinessName());
-        vendorProfile.setBankAccountNo(vendorRegisterDto.getVendorProfileDto().getBankAccountNo());
-        vendorProfile.setBank(vendorRegisterDto.getVendorProfileDto().getBank());
+        vendorProfile.setBusinessName(vendorRegisterDto.getBusinessName());
+        vendorProfile.setBankAccountNo(vendorRegisterDto.getBankAccountNo());
+        vendorProfile.setBank(vendorRegisterDto.getBank());
         vendorProfileRepository.save(vendorProfile);
     }
 
@@ -87,5 +88,75 @@ public class UserServiceImp implements UserService{
             throw new RuntimeException("");
         }
         return jwtUtil.generateToken(loginDto.getEmail());
+    }
+
+    @Override
+    public void updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
+        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException(""));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),userUpdateDTO.getCurrentPassword()));
+        if(!authentication.isAuthenticated()){
+            throw new RuntimeException("");
+        }
+        if(userRepository.existsByEmail(userUpdateDTO.getEmail()) && userUpdateDTO.getEmail() != null){
+            throw new RuntimeException("");
+        }
+        if(!userUpdateDTO.getPassword().equals(userUpdateDTO.getPasswordRepeat())){
+            throw new RuntimeException("");
+        }
+        if (userUpdateDTO.getEmail() != null) {
+            user.setEmail(userUpdateDTO.getEmail());
+        }
+        Optional.ofNullable(userUpdateDTO.getFname()).ifPresent(user::setFname);
+        Optional.ofNullable(userUpdateDTO.getLname()).ifPresent(user::setLname);
+        Optional.ofNullable(userUpdateDTO.getEmail()).ifPresent(user::setEmail);
+        Optional.ofNullable(userUpdateDTO.getPassword()).ifPresent((pass)->user.setPassword(passwordEncoder.encode(pass)));
+        Optional.ofNullable(userUpdateDTO.getPhoneNo()).ifPresent(user::setPhoneNo);
+        Optional.ofNullable(userUpdateDTO.getAddress()).ifPresent(user::setAddress);
+        Optional<Province> province = provinceRepository.findById(userUpdateDTO.getProvinceId());
+        province.ifPresent(user::setProvince);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void updateVendor(UUID id, VendorUpdateDto vendorUpdateDto) {
+        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException(""));
+        VendorProfile vendorProfile = vendorProfileRepository.findById(id).orElseThrow(()->new RuntimeException(""));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),vendorUpdateDto.getCurrentPassword()));
+        if(!authentication.isAuthenticated()){
+            throw new RuntimeException("");
+        }
+        if(userRepository.existsByEmail(vendorUpdateDto.getEmail()) && vendorUpdateDto.getEmail() != null){
+            throw new RuntimeException("");
+        }
+        if(!vendorUpdateDto.getPassword().equals(vendorUpdateDto.getPasswordRepeat())){
+            throw new RuntimeException("");
+        }
+        if (vendorUpdateDto.getEmail() != null) {
+            user.setEmail(vendorUpdateDto.getEmail());
+        }
+        Optional.ofNullable(vendorUpdateDto.getFname()).ifPresent(user::setFname);
+        Optional.ofNullable(vendorUpdateDto.getLname()).ifPresent(user::setLname);
+        Optional.ofNullable(vendorUpdateDto.getEmail()).ifPresent(user::setEmail);
+        Optional.ofNullable(vendorUpdateDto.getPassword()).ifPresent((pass)->user.setPassword(passwordEncoder.encode(pass)));
+        Optional.ofNullable(vendorUpdateDto.getPhoneNo()).ifPresent(user::setPhoneNo);
+        Optional.ofNullable(vendorUpdateDto.getAddress()).ifPresent(user::setAddress);
+        Optional<Province> province = provinceRepository.findById(vendorUpdateDto.getProvinceId());
+        province.ifPresent(user::setProvince);
+        userRepository.save(user);
+        Optional.ofNullable(vendorUpdateDto.getBusinessName()).ifPresent(vendorProfile::setBusinessName);
+        Optional.ofNullable(vendorUpdateDto.getBankAccountNo()).ifPresent(vendorProfile::setBankAccountNo);
+        Optional.ofNullable(vendorUpdateDto.getBank()).ifPresent(vendorProfile::setBank);
+        vendorProfileRepository.save(vendorProfile);
+    }
+
+    @Override
+    public void deleteUser(UUID id, PasswordDTO pass) {
+        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException(""));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),pass.password()));
+        if(!authentication.isAuthenticated()){
+            throw new RuntimeException("");
+        }
+        userRepository.deleteById(user.getId());
     }
 }

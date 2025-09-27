@@ -1,21 +1,24 @@
 package com.tisitha.emarket.cotroller;
 
-import com.tisitha.emarket.dto.LoginDto;
-import com.tisitha.emarket.dto.UserRegisterDto;
-import com.tisitha.emarket.dto.VendorRegisterDto;
+import com.tisitha.emarket.dto.*;
+import com.tisitha.emarket.service.ForgotPasswordService;
 import com.tisitha.emarket.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
 
     private final UserService userService;
+    private final ForgotPasswordService forgotPasswordService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ForgotPasswordService forgotPasswordService) {
         this.userService = userService;
+        this.forgotPasswordService = forgotPasswordService;
     }
 
     @PostMapping("/register-user")
@@ -33,8 +36,40 @@ public class UserController {
         return new ResponseEntity<>(userService.loginAccount(loginDto), HttpStatus.OK);
     }
 
-//    public String updateAccount()
-//
-//    public String deleteAccount()
+    @PostMapping("/verifymail/{email}")
+    public ResponseEntity<Void> verifyEmail(@PathVariable String email){
+        forgotPasswordService.verifyEmail(email);
+        return ResponseEntity.ok().build();
+
+    }
+    @PostMapping("/varifyotp/{otp}/{email}")
+    public ResponseEntity<Void> verifyOtp(@PathVariable Integer otp,@PathVariable String email){
+        forgotPasswordService.verifyOtp(otp,email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/changepassword/{otp}/{email}")
+    public ResponseEntity<Void> changePasswordHandler(@RequestBody ChangePasswordDto changePasswordDto, @PathVariable Integer otp, @PathVariable String email){
+        forgotPasswordService.changePasswordHandler(changePasswordDto,otp,email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/user-update/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO) {
+        userService.updateUser(id,userUpdateDTO);
+        return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
+    }
+
+    @PutMapping("/vendor-update/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable UUID id, @RequestBody VendorUpdateDto vendorUpdateDto) {
+        userService.updateVendor(id,vendorUpdateDto);
+        return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user-delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id, @RequestBody PasswordDTO pass) {
+        userService.deleteUser(id,pass);
+        return new ResponseEntity<>("successfully account deleted",HttpStatus.OK);
+    }
 
 }

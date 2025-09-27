@@ -3,7 +3,9 @@ package com.tisitha.emarket.service;
 import com.tisitha.emarket.dto.CartItemRequestDto;
 import com.tisitha.emarket.dto.CartItemResponseDto;
 import com.tisitha.emarket.model.CartItem;
+import com.tisitha.emarket.model.Product;
 import com.tisitha.emarket.repo.CartItemRepository;
+import com.tisitha.emarket.repo.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +15,11 @@ import java.util.UUID;
 public class CartItemServiceImp implements CartItemService{
 
     private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
 
-    public CartItemServiceImp(CartItemRepository cartItemRepository) {
+    public CartItemServiceImp(CartItemRepository cartItemRepository, ProductRepository productRepository) {
         this.cartItemRepository = cartItemRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -26,16 +30,24 @@ public class CartItemServiceImp implements CartItemService{
 
     @Override
     public CartItemResponseDto addCartItem(CartItemRequestDto cartItemRequestDto) {
+        Product product = productRepository.findById(cartItemRequestDto.getProductId()).orElseThrow(()->new RuntimeException(""));
+        if(cartItemRequestDto.getQuantity()==0 || cartItemRequestDto.getQuantity()> product.getQuantity()){
+            throw new RuntimeException("");
+        }
         CartItem cartItem = new CartItem();
         cartItem.setUser(cartItemRequestDto.getUser());
         cartItem.setQuantity(cartItemRequestDto.getQuantity());
-        cartItem.setProduct(cartItemRequestDto.getProduct());
+        cartItem.setProduct(product);
         CartItem newCartItem = cartItemRepository.save(cartItem);
         return mapCartItemToCartItemDto(newCartItem);
     }
 
     @Override
     public CartItemResponseDto updateCartItem(UUID cartItemId, CartItemRequestDto cartItemRequestDto) {
+        Product product = productRepository.findById(cartItemRequestDto.getProductId()).orElseThrow(()->new RuntimeException(""));
+        if(cartItemRequestDto.getQuantity()==0 || cartItemRequestDto.getQuantity()> product.getQuantity()){
+            throw new RuntimeException("");
+        }
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(()->new RuntimeException(""));
         cartItem.setQuantity(cartItemRequestDto.getQuantity());
         CartItem newCartItem = cartItemRepository.save(cartItem);

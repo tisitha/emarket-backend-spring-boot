@@ -14,7 +14,7 @@ public class OrderRequestDto {
 
     private UUID userId;
 
-    private PaymentMethod paymentMethod;
+    private Long paymentMethodId;
 
 
 }

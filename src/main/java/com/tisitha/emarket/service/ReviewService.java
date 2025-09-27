@@ -1,13 +1,13 @@
 package com.tisitha.emarket.service;
 
+import com.tisitha.emarket.dto.ReviewGetRequestDto;
+import com.tisitha.emarket.dto.ReviewPageSortDto;
 import com.tisitha.emarket.dto.ReviewRequestDto;
 import com.tisitha.emarket.dto.ReviewResponseDto;
 
-import java.util.List;
-
 public interface ReviewService {
 
-    List<ReviewResponseDto> getReviewTitles();
+    ReviewPageSortDto getReviewTitles(ReviewGetRequestDto reviewGetRequestDto);
 
     ReviewResponseDto getReviewTitle(Long reviewId);
 

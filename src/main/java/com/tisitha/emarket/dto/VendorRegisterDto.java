@@ -2,12 +2,8 @@ package com.tisitha.emarket.dto;
 
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 public class VendorRegisterDto {
-
-    private UUID id;
 
     private String fname;
 
@@ -25,7 +21,10 @@ public class VendorRegisterDto {
 
     private Long provinceId;
 
-    private VendorProfileDto vendorProfileDto;
+    private String businessName;
 
+    private String bankAccountNo;
+
+    private String bank;
 
 }

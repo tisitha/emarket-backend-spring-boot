@@ -31,7 +31,7 @@ public class ProductServiceImp implements ProductService{
     public ProductPageSortDto getProducts(ProductGetRequestDto productGetRequestDto) {
         Sort sort = productGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(productGetRequestDto.getSortBy()).ascending():Sort.by(productGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(productGetRequestDto.getPageNumber(),productGetRequestDto.getPageSize(),sort);
-        Page<Product> productsPage = productRepository.findAllByCategoryIdAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqual(
+        Page<Product> productsPage = productRepository.findAllByCategoryIdAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqual(
                 productGetRequestDto.getCategoryId(),
                 productGetRequestDto.isFreeDelivery()?List.of(true):List.of(true,false),
                 productGetRequestDto.isCod()?List.of(true):List.of(true,false),
@@ -39,6 +39,31 @@ public class ProductServiceImp implements ProductService{
                 productGetRequestDto.getWarrantyIds(),
                 productGetRequestDto.getMinPrice(),
                 productGetRequestDto.getMaxPrice(),
+                productGetRequestDto.getMinQuantity(),
+                pageable
+        );
+        List<Product> products = productsPage.getContent();
+        return new ProductPageSortDto(
+                products.stream().map(this::mapProductToProductDto).toList(),
+                productsPage.getTotalElements(),
+                productsPage.getTotalPages(),
+                productsPage.isLast()
+        );
+    }
+
+    @Override
+    public ProductPageSortDto getProductsByVendor(UUID vendorId, ProductGetRequestDto productGetRequestDto) {
+        Sort sort = productGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(productGetRequestDto.getSortBy()).ascending():Sort.by(productGetRequestDto.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(productGetRequestDto.getPageNumber(),productGetRequestDto.getPageSize(),sort);
+        Page<Product> productsPage = productRepository.findAllByFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqualAndVendorProfileVendorId(
+                productGetRequestDto.isFreeDelivery()?List.of(true):List.of(true,false),
+                productGetRequestDto.isCod()?List.of(true):List.of(true,false),
+                productGetRequestDto.getProvinceIds(),
+                productGetRequestDto.getWarrantyIds(),
+                productGetRequestDto.getMinPrice(),
+                productGetRequestDto.getMaxPrice(),
+                productGetRequestDto.getMinQuantity(),
+                vendorId,
                 pageable
         );
         List<Product> products = productsPage.getContent();
@@ -122,25 +147,20 @@ public class ProductServiceImp implements ProductService{
         Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(()->new RuntimeException());
         Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(()->new RuntimeException());
         Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(()->new RuntimeException());
-        return new Product(
-                productRequestDto.getId(),
-                vendorProfile,
-                productRequestDto.getName(),
-                productRequestDto.getImgUrl(),
-                productRequestDto.getDescription(),
-                productRequestDto.getPrice(),
-                productRequestDto.getDeal(),
-                productRequestDto.isCod(),
-                productRequestDto.isFreeDelivery(),
-                productRequestDto.getBrand(),
-                category,
-                null,
-                province,
-                warranty,
-                null,
-                null,
-                productRequestDto.getQuantity(),
-                null
-        );
+        Product product = new Product();
+        product.setVendorProfile(vendorProfile);
+        product.setName(productRequestDto.getName());
+        product.setImgUrl(productRequestDto.getImgUrl());
+        product.setDescription(productRequestDto.getDescription());
+        product.setPrice(productRequestDto.getPrice());
+        product.setDeal(productRequestDto.getDeal());
+        product.setCod(productRequestDto.isCod());
+        product.setFreeDelivery(productRequestDto.isFreeDelivery());
+        product.setBrand(productRequestDto.getBrand());
+        product.setCategory(category);
+        product.setProvince(province);
+        product.setWarranty(warranty);
+        product.setQuantity(productRequestDto.getQuantity());
+        return product;
     }
 }

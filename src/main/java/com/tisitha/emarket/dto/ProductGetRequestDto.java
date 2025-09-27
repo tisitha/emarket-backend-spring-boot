@@ -39,4 +39,6 @@ public class ProductGetRequestDto {
 
     private double maxPrice;
 
+    private int minQuantity;
+
 }

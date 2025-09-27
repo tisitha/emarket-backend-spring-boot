@@ -1,6 +1,5 @@
 package com.tisitha.emarket.repo;
 
-import com.tisitha.emarket.dto.CartItemResponseDto;
 import com.tisitha.emarket.model.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

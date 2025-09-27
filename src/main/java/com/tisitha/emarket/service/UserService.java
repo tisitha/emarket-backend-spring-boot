@@ -1,8 +1,8 @@
 package com.tisitha.emarket.service;
 
-import com.tisitha.emarket.dto.LoginDto;
-import com.tisitha.emarket.dto.UserRegisterDto;
-import com.tisitha.emarket.dto.VendorRegisterDto;
+import com.tisitha.emarket.dto.*;
+
+import java.util.UUID;
 
 public interface UserService {
 
@@ -12,4 +12,9 @@ public interface UserService {
 
     String loginAccount(LoginDto loginDto);
 
+    void updateUser(UUID id, UserUpdateDTO userUpdateDTO);
+
+    void updateVendor(UUID id, VendorUpdateDto vendorUpdateDto);
+
+    void deleteUser(UUID id, PasswordDTO pass);
 }

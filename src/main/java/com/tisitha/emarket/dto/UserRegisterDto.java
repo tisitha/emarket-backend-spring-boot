@@ -7,8 +7,6 @@ import java.util.UUID;
 @Data
 public class UserRegisterDto {
 
-    private UUID id;
-
     private String fname;
 
     private String lname;

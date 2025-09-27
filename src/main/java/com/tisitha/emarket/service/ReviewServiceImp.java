@@ -1,27 +1,43 @@
 package com.tisitha.emarket.service;
 
+import com.tisitha.emarket.dto.ReviewGetRequestDto;
+import com.tisitha.emarket.dto.ReviewPageSortDto;
 import com.tisitha.emarket.dto.ReviewRequestDto;
 import com.tisitha.emarket.dto.ReviewResponseDto;
-import com.tisitha.emarket.model.Review;
-import com.tisitha.emarket.repo.ReviewRepository;
+import com.tisitha.emarket.model.*;
+import com.tisitha.emarket.repo.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewServiceImp implements ReviewService{
 
     private final ReviewRepository reviewRepository;
-
-    public ReviewServiceImp(ReviewRepository reviewRepository) {
-        this.reviewRepository = reviewRepository;
-    }
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final ReviewPassRepository reviewPassRepository;
+    private final NotificationRepository notificationRepository;
 
     @Override
-    public List<ReviewResponseDto> getReviewTitles() {
-        List<Review> reviews =reviewRepository.findAll();
-        return reviews.stream().map(this::mapReviewToReviewDto).toList();
+    public ReviewPageSortDto getReviewTitles(ReviewGetRequestDto reviewGetRequestDto) {
+        Sort sort = reviewGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(reviewGetRequestDto.getSortBy()).ascending():Sort.by(reviewGetRequestDto.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(reviewGetRequestDto.getPageNumber(),reviewGetRequestDto.getPageSize(),sort);
+        Page<Review> reviews =reviewRepository.findAllByProductId(reviewGetRequestDto.getProductId(),pageable);
+        return new ReviewPageSortDto(
+                reviews.getContent().stream().map(this::mapReviewToReviewDto).toList(),
+                reviews.getNumberOfElements(),
+                reviews.getTotalPages(),
+                reviews.isLast());
     }
 
     @Override
@@ -31,17 +47,27 @@ public class ReviewServiceImp implements ReviewService{
     }
 
     @Override
+    @Transactional
     public ReviewResponseDto addReviewTitle(ReviewRequestDto reviewRequestDto) {
+        reviewPassRepository.deleteByUserIdAndProductId(reviewRequestDto.getUserId(),reviewRequestDto.getProductId());
+        Product product = productRepository.findById(reviewRequestDto.getProductId()).orElseThrow(()->new RuntimeException(""));
+        User user = userRepository.findById(reviewRequestDto.getUserId()).orElseThrow(()->new RuntimeException(""));
         Review review = new Review();
-        review.setUid(reviewRequestDto.getUid());
-        review.setPid(reviewRequestDto.getPid());
         review.setBody(reviewRequestDto.getBody());
         review.setRate(reviewRequestDto.getRate());
         review.setDate(new Date());
-        review.setProduct(reviewRequestDto.getProduct());
-        review.setUser(reviewRequestDto.getUser());
+        review.setProduct(product);
+        review.setUser(user);
         review.setEdited(false);
         Review newReview = reviewRepository.save(review);
+        Notification notification = new Notification();
+        notification.setSeen(false);
+        notification.setUser(product.getVendorProfile().getUser());
+        notification.setNotificationType(NotificationType.PRODUCT);
+        notification.setAttachedId(product.getId().toString());
+        notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));
+        notification.setMessage(product.getName()+"\n"+user.getFname()+" rated "+review.getRate()+".");
+        notificationRepository.save(notification);
         return mapReviewToReviewDto(newReview);
     }
 
@@ -64,8 +90,6 @@ public class ReviewServiceImp implements ReviewService{
     private ReviewResponseDto mapReviewToReviewDto(Review review){
         return new ReviewResponseDto(
                 review.getId(),
-                review.getUid(),
-                review.getPid(),
                 review.getBody(),
                 review.getRate(),
                 review.getDate(),

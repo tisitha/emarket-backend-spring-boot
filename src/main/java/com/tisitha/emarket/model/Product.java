@@ -72,5 +72,8 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<Order> orders;
 
+    @OneToMany(mappedBy = "product")
+    private List<ReviewPass> reviewPass;
+
 }
 

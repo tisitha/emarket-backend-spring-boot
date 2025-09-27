@@ -1,7 +1,6 @@
 package com.tisitha.emarket.service;
 
-import com.tisitha.emarket.dto.OrderRequestDto;
-import com.tisitha.emarket.dto.OrderResponseDto;
+import com.tisitha.emarket.dto.*;
 import com.tisitha.emarket.model.OrderStatus;
 
 import java.util.List;
@@ -11,12 +10,16 @@ public interface OrderService {
 
     OrderResponseDto getOrder(UUID orderId);
 
-    OrderResponseDto addOrder(OrderRequestDto orderRequestDto);
+    void addOrder(OrderRequestDto orderRequestDto);
 
-    List<OrderResponseDto> getOrdersByVendor(UUID vendorId);
+    OrderPageSortDto getOrdersByVendor(OrderGetRequestDto orderGetRequestDto);
 
-    List<OrderResponseDto> getOrdersByUser(UUID userId);
+    OrderPageSortDto getOrdersByUser(OrderGetRequestDto orderGetRequestDto);
 
-    OrderResponseDto ChangeOrderStatus(UUID orderId, OrderStatus orderStatus);
+    OrderResponseDto changeOrderStatus(UUID orderId);
+
+    OrderResponseDto deliveredOrder(UUID orderId);
+
+    OrderResponseDto cancelOrder(UUID orderId);
 
 }

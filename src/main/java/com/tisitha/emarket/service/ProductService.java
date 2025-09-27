@@ -11,6 +11,8 @@ public interface ProductService {
 
     ProductPageSortDto getProducts(ProductGetRequestDto productGetRequestDto);
 
+    ProductPageSortDto getProductsByVendor(UUID vendorId,ProductGetRequestDto productGetRequestDto);
+
     ProductResponseDto getProduct(UUID id);
 
     ProductResponseDto addProduct(ProductRequestDto productRequestDto);

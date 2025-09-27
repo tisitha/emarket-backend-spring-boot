@@ -62,6 +62,15 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Order> order;
 
+    @OneToMany(mappedBy = "user")
+    private List<ReviewPass> reviewPass;
+
+    @OneToMany(mappedBy = "user")
+    private List<Notification> notifications;
+
+    @OneToOne(mappedBy = "user")
+    private ForgotPassword forgotPassword;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();

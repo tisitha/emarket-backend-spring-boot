@@ -11,8 +11,6 @@ import java.util.UUID;
 @Data
 public class ProductRequestDto {
 
-    private UUID id;
-
     private UUID vendorProfileId;
 
     private String name;

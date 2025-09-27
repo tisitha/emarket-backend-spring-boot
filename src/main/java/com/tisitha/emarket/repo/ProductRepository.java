@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
-    Page<Product> findAllByCategoryIdAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqual(
+    Page<Product> findAllByCategoryIdAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqual(
             Long categoryId,
             List<Boolean> freeDeliveries,
             List<Boolean> cods,
@@ -20,16 +20,17 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             List<Long> warranties,
             double minPrice,
             double maxPrice,
+            int minQuantity,
             Pageable pageable);
 
-    Page<Product> findAllByCategoryIdInAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndVendorProfileVendorId(
-            List<Long> categoryId,
+    Page<Product> findAllByFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqualAndVendorProfileVendorId(
             List<Boolean> freeDeliveries,
             List<Boolean> cods,
             List<Long> provinces,
             List<Long> warranties,
             double minPrice,
             double maxPrice,
+            int minQuantity,
             UUID vendorProfileId,
             Pageable pageable);
 }

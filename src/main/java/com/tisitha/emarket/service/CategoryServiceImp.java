@@ -3,6 +3,7 @@ package com.tisitha.emarket.service;
 import com.tisitha.emarket.dto.CategoryRequestDto;
 import com.tisitha.emarket.dto.CategoryResponseDto;
 import com.tisitha.emarket.model.Category;
+import com.tisitha.emarket.model.Product;
 import com.tisitha.emarket.repo.CategoryRepository;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,8 @@ public class CategoryServiceImp implements CategoryService{
     public CategoryResponseDto addCategoryTitle(CategoryRequestDto categoryRequestDto) {
         Category category = new Category();
         category.setName(categoryRequestDto.getName());
-        category.setParent(categoryRequestDto.getParent());
+        Category parent = categoryRepository.findById(categoryRequestDto.getParentId()).orElseThrow(()->new RuntimeException(""));
+        category.setParent(parent);
         Category newCategory = categoryRepository.save(category);
         return mapCategoryToCategoryDto(newCategory);
     }
@@ -42,7 +44,8 @@ public class CategoryServiceImp implements CategoryService{
     public CategoryResponseDto updateCategoryTitle(Long categoryId,CategoryRequestDto categoryRequestDto) {
         Category oldCategory = categoryRepository.findById(categoryId).orElseThrow(()->new RuntimeException(""));
         oldCategory.setName(categoryRequestDto.getName());
-        oldCategory.setParent(categoryRequestDto.getParent());
+        Category parent = categoryRepository.findById(categoryRequestDto.getParentId()).orElseThrow(()->new RuntimeException(""));
+        oldCategory.setParent(parent);
         Category newCategory = categoryRepository.save(oldCategory);
         return mapCategoryToCategoryDto(newCategory);
     }

@@ -19,10 +19,6 @@ public class ReviewResponseDto {
 
     private UUID id;
 
-    private UUID uid;
-
-    private UUID pid;
-
     private String body;
 
     private Integer rate;

@@ -12,6 +12,6 @@ public class CategoryRequestDto {
 
     private String name;
 
-    private Category parent;
+    private Long parentId;
 
 }
