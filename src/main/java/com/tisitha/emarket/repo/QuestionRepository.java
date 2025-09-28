@@ -16,7 +16,7 @@ public interface QuestionRepository extends JpaRepository<Question,Long> {
 
     Page<Question> findAllByProductIdAndAnswerIsNull(UUID productId, Pageable pageable);
 
-    Page<Question> findAllByProductVendorProfileEmailAndAnswerIsNull(String email, Pageable pageable);
+    Page<Question> findAllByProductVendorProfileUserEmailAndAnswerIsNull(String email, Pageable pageable);
 
-    Optional<Question> findByIdAndProductVendorProfileEmail(Long questionId, String email);
+    Optional<Question> findByIdAndProductVendorProfileUserEmail(Long questionId, String email);
 }

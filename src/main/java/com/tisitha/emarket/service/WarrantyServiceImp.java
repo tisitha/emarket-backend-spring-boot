@@ -2,6 +2,7 @@ package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.WarrantyRequestDto;
 import com.tisitha.emarket.dto.WarrantyResponseDto;
+import com.tisitha.emarket.exception.WarrantyNotFoundException;
 import com.tisitha.emarket.model.Warranty;
 import com.tisitha.emarket.repo.WarrantyRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class WarrantyServiceImp implements WarrantyService{
 
     @Override
     public WarrantyResponseDto getWarrantyTitle(Long warrantyId) {
-        Warranty warranty = warrantyRepository.findById(warrantyId).orElseThrow(()->new RuntimeException(""));
+        Warranty warranty = warrantyRepository.findById(warrantyId).orElseThrow(WarrantyNotFoundException::new);
         return mapWarrantyToWarrantyDto(warranty);
     }
 
@@ -39,7 +40,7 @@ public class WarrantyServiceImp implements WarrantyService{
 
     @Override
     public WarrantyResponseDto updateWarrantyTitle(Long warrantyId,WarrantyRequestDto warrantyRequestDto) {
-        Warranty oldWarranty = warrantyRepository.findById(warrantyId).orElseThrow(()->new RuntimeException(""));
+        Warranty oldWarranty = warrantyRepository.findById(warrantyId).orElseThrow(WarrantyNotFoundException::new);
         oldWarranty.setName(warrantyRequestDto.getName());
         Warranty newWarranty = warrantyRepository.save(oldWarranty);
         return mapWarrantyToWarrantyDto(newWarranty);
@@ -47,7 +48,7 @@ public class WarrantyServiceImp implements WarrantyService{
 
     @Override
     public void deleteWarrantyTitle(Long warrantyId) {
-        warrantyRepository.findById(warrantyId).orElseThrow(()->new RuntimeException(""));
+        warrantyRepository.findById(warrantyId).orElseThrow(WarrantyNotFoundException::new);
         warrantyRepository.deleteById(warrantyId);
     }
 

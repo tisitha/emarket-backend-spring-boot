@@ -5,6 +5,7 @@ import com.tisitha.emarket.dto.ReviewPageSortDto;
 import com.tisitha.emarket.dto.ReviewRequestDto;
 import com.tisitha.emarket.dto.ReviewResponseDto;
 import com.tisitha.emarket.service.ReviewService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,17 +22,17 @@ public class ReviewController {
     }
 
     @GetMapping("/open/review")
-    public ResponseEntity<ReviewPageSortDto> getReviewTitles(@RequestBody ReviewGetRequestDto reviewGetRequestDto) {
+    public ResponseEntity<ReviewPageSortDto> getReviewTitles(@Valid @RequestBody ReviewGetRequestDto reviewGetRequestDto) {
         return new ResponseEntity<>(reviewService.getReviewTitles(reviewGetRequestDto), HttpStatus.OK);
     }
 
     @PostMapping("/review")
-    public ResponseEntity<ReviewResponseDto> addReviewTitle(@RequestBody ReviewRequestDto reviewRequestDto, Authentication authentication) {
+    public ResponseEntity<ReviewResponseDto> addReviewTitle(@Valid @RequestBody ReviewRequestDto reviewRequestDto, Authentication authentication) {
         return new ResponseEntity<>(reviewService.addReviewTitle(reviewRequestDto,authentication),HttpStatus.CREATED);
     }
 
     @PutMapping("/review/{reviewId}")
-    public ResponseEntity<ReviewResponseDto> updateReviewTitle(@PathVariable Long reviewId,@RequestBody ReviewRequestDto reviewRequestDto, Authentication authentication) {
+    public ResponseEntity<ReviewResponseDto> updateReviewTitle(@PathVariable Long reviewId,@Valid @RequestBody ReviewRequestDto reviewRequestDto, Authentication authentication) {
         return new ResponseEntity<>(reviewService.updateReviewTitle(reviewId,reviewRequestDto,authentication),HttpStatus.CREATED);
     }
 

@@ -5,6 +5,7 @@ import com.tisitha.emarket.dto.ProductPageSortDto;
 import com.tisitha.emarket.dto.ProductRequestDto;
 import com.tisitha.emarket.dto.ProductResponseDto;
 import com.tisitha.emarket.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,12 +25,12 @@ public class ProductController {
     }
 
     @GetMapping("/open/product")
-    public ResponseEntity<ProductPageSortDto> getProducts(@RequestBody ProductGetRequestDto productGetRequestDto){
+    public ResponseEntity<ProductPageSortDto> getProducts(@Valid @RequestBody ProductGetRequestDto productGetRequestDto){
         return new ResponseEntity<>(productService.getProducts(productGetRequestDto), HttpStatus.OK);
     }
 
     @GetMapping("/product/vendor/{vendorId}")
-    public ResponseEntity<ProductPageSortDto> getProductsByVendor(@PathVariable UUID vendorId, @RequestBody ProductGetRequestDto productGetRequestDto){
+    public ResponseEntity<ProductPageSortDto> getProductsByVendor(@PathVariable UUID vendorId,@Valid  @RequestBody ProductGetRequestDto productGetRequestDto){
         return new ResponseEntity<>(productService.getProductsByVendor(vendorId,productGetRequestDto), HttpStatus.OK);
     }
 
@@ -44,12 +45,12 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public ResponseEntity<ProductResponseDto> addProducts(@RequestBody ProductRequestDto productRequestDto, Authentication authentication){
+    public ResponseEntity<ProductResponseDto> addProducts(@Valid @RequestBody ProductRequestDto productRequestDto, Authentication authentication){
         return new ResponseEntity<>(productService.addProduct(productRequestDto,authentication), HttpStatus.CREATED);
     }
 
     @PutMapping("/product/{productId}")
-    public ResponseEntity<ProductResponseDto> updateProducts(@PathVariable UUID productId,@RequestBody ProductRequestDto productRequestDto,Authentication authentication){
+    public ResponseEntity<ProductResponseDto> updateProducts(@PathVariable UUID productId,@Valid @RequestBody ProductRequestDto productRequestDto,Authentication authentication){
         return new ResponseEntity<>(productService.updateProduct(productId,productRequestDto,authentication), HttpStatus.CREATED);
     }
 

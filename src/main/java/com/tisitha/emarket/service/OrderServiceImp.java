@@ -1,6 +1,10 @@
 package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.*;
+import com.tisitha.emarket.exception.InvalidInputException;
+import com.tisitha.emarket.exception.OrderNotFoundException;
+import com.tisitha.emarket.exception.PaymentMethodNotFoundException;
+import com.tisitha.emarket.exception.UnauthorizeAccessException;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.*;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +35,9 @@ public class OrderServiceImp implements OrderService{
 
     @Override
     public OrderResponseDto getOrder(UUID orderId, Authentication authentication) {
-        Order order = orderRepository.findById(orderId).orElseThrow(()->new RuntimeException(""));
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
         if(!order.getUser().getEmail().equals(authentication.getName()) && !order.getVendorProfile().getUser().getEmail().equals(authentication.getName())){
-            throw new RuntimeException("");
+            throw new UnauthorizeAccessException();
         }
         return mapOrderToOrderDto(order);
     }
@@ -46,7 +50,7 @@ public class OrderServiceImp implements OrderService{
             Order order = new Order();
             order.setUser(cartItem.getUser());
             order.setOrderStatus(OrderStatus.PENDING);
-            PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequestDto.getPaymentMethodId()).orElseThrow(()->new RuntimeException(""));
+            PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequestDto.getPaymentMethodId()).orElseThrow(()->new PaymentMethodNotFoundException());
             order.setPaymentMethod(paymentMethod);
             Product product = cartItem.getProduct();
             if(cartItem.getQuantity()==0 || cartItem.getQuantity()> product.getQuantity()){
@@ -98,7 +102,7 @@ public class OrderServiceImp implements OrderService{
     @Override
     @Transactional
     public OrderResponseDto changeOrderStatus(UUID orderId, Authentication authentication) {
-        Order order = orderRepository.findByIdAndVendorProfileUserEmail(authentication.getName()).orElseThrow(()->new RuntimeException(""));
+        Order order = orderRepository.findByIdAndVendorProfileUserEmail(orderId,authentication.getName()).orElseThrow(OrderNotFoundException::new);
         OrderStatus newOrderStatus;
         if(order.getOrderStatus()==OrderStatus.PENDING){
             newOrderStatus = OrderStatus.PROCESSING;
@@ -123,7 +127,7 @@ public class OrderServiceImp implements OrderService{
             notificationRepository.save(notification);
         }
         else{
-            throw new RuntimeException("");
+            throw new InvalidInputException();
         }
         order.setOrderStatus(newOrderStatus);
         Order newOrder = orderRepository.save(order);
@@ -133,9 +137,9 @@ public class OrderServiceImp implements OrderService{
     @Override
     @Transactional
     public OrderResponseDto deliveredOrder(UUID orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(()->new RuntimeException(""));
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
         if(order.getOrderStatus()!=OrderStatus.SHIPPED){
-            throw new RuntimeException("");
+            throw new InvalidInputException();
         }
         Notification notification = new Notification();
         notification.setSeen(false);
@@ -157,12 +161,12 @@ public class OrderServiceImp implements OrderService{
     @Override
     @Transactional
     public OrderResponseDto cancelOrder(UUID orderId, Authentication authentication) {
-        Order order = orderRepository.findById(orderId).orElseThrow(()->new RuntimeException(""));
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
         if(order.getOrderStatus()==OrderStatus.CANCELLED || order.getOrderStatus()==OrderStatus.DELIVERED){
-            throw new RuntimeException("");
+            throw new InvalidInputException();
         }
         if(!order.getUser().getEmail().equals(authentication.getName()) && !order.getVendorProfile().getUser().getEmail().equals(authentication.getName())){
-            throw new RuntimeException("");
+            throw new UnauthorizeAccessException();
         }
         Notification notification = new Notification();
         notification.setSeen(false);

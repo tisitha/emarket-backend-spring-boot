@@ -3,6 +3,7 @@ package com.tisitha.emarket.cotroller;
 import com.tisitha.emarket.dto.CartItemRequestDto;
 import com.tisitha.emarket.dto.CartItemResponseDto;
 import com.tisitha.emarket.service.CartItemService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,7 +23,7 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<CartItemResponseDto> addToCart(@RequestBody CartItemRequestDto cartItemRequestDto, Authentication authentication){
+    public ResponseEntity<CartItemResponseDto> addToCart(@Valid @RequestBody CartItemRequestDto cartItemRequestDto, Authentication authentication){
         return new ResponseEntity<>(cartItemService.addCartItem(cartItemRequestDto,authentication), HttpStatus.CREATED);
     }
 

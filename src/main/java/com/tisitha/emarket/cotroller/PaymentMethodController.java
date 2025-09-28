@@ -3,6 +3,7 @@ package com.tisitha.emarket.cotroller;
 import com.tisitha.emarket.dto.PaymentMethodRequestDto;
 import com.tisitha.emarket.dto.PaymentMethodResponseDto;
 import com.tisitha.emarket.service.PaymentMethodService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +26,12 @@ public class PaymentMethodController {
     }
 
     @PostMapping("/admin/paymentmethod")
-    public ResponseEntity<PaymentMethodResponseDto> addPaymentMethod(@RequestBody PaymentMethodRequestDto paymentMethodRequestDto){
+    public ResponseEntity<PaymentMethodResponseDto> addPaymentMethod(@Valid @RequestBody PaymentMethodRequestDto paymentMethodRequestDto){
         return new ResponseEntity<>(paymentMethodService.addPaymentMethodTitle(paymentMethodRequestDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/paymentmethod/{id}")
-    public ResponseEntity<PaymentMethodResponseDto> editPaymentMethod(@PathVariable Long pmId,@RequestBody PaymentMethodRequestDto paymentMethodRequestDto){
+    public ResponseEntity<PaymentMethodResponseDto> editPaymentMethod(@PathVariable Long pmId,@Valid @RequestBody PaymentMethodRequestDto paymentMethodRequestDto){
         return new ResponseEntity<>(paymentMethodService.updatePaymentMethodTitle(pmId,paymentMethodRequestDto), HttpStatus.CREATED);
     }
 

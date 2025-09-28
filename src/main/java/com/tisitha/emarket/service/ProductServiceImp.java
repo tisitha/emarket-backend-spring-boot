@@ -4,6 +4,7 @@ import com.tisitha.emarket.dto.ProductGetRequestDto;
 import com.tisitha.emarket.dto.ProductPageSortDto;
 import com.tisitha.emarket.dto.ProductRequestDto;
 import com.tisitha.emarket.dto.ProductResponseDto;
+import com.tisitha.emarket.exception.*;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.*;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +79,7 @@ public class ProductServiceImp implements ProductService{
 
     @Override
     public ProductResponseDto getProduct(UUID id) {
-        Product product = productRepository.findById(id).orElseThrow(()->new RuntimeException());
+        Product product = productRepository.findById(id).orElseThrow(()->new ProductNotFoundException());
         return mapProductToProductDto(product);
     }
 
@@ -93,13 +94,13 @@ public class ProductServiceImp implements ProductService{
     public ProductResponseDto updateProduct(UUID id,ProductRequestDto productRequestDto,Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         if(user.getId()!=productRequestDto.getVendorProfileId()){
-            throw new RuntimeException("");
+            throw new UnauthorizeAccessException();
         }
-        VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(()->new RuntimeException());
-        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(()->new RuntimeException());
-        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(()->new RuntimeException());
-        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(()->new RuntimeException());
-        Product product = productRepository.findById(id).orElseThrow(()->new RuntimeException());
+        VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(UserNotFoundException::new);
+        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(CategoryNotFoundException::new);
+        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
+        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(WarrantyNotFoundException::new);
+        Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
         product.setVendorProfile(vendorProfile);
         product.setName(productRequestDto.getName());
         product.setImgUrl(productRequestDto.getImgUrl());
@@ -120,7 +121,7 @@ public class ProductServiceImp implements ProductService{
     public ProductResponseDto addProduct(ProductRequestDto productRequestDto,Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         if(user.getId()!=productRequestDto.getVendorProfileId()){
-            throw new RuntimeException("");
+            throw new UnauthorizeAccessException();
         }
         Product newProduct = productRepository.save(mapProductDtoToProduct(productRequestDto));
         return mapProductToProductDto(newProduct);
@@ -128,7 +129,7 @@ public class ProductServiceImp implements ProductService{
 
     @Override
     public void deleteProduct(UUID id,Authentication authentication) {
-        productRepository.findByIdAndVendorProfileUserEmail(id,authentication.getName()).orElseThrow(()->new RuntimeException());
+        productRepository.findByIdAndVendorProfileUserEmail(id,authentication.getName()).orElseThrow(UnauthorizeAccessException::new);
         productRepository.deleteById(id);
     }
 
@@ -159,10 +160,10 @@ public class ProductServiceImp implements ProductService{
     }
 
     private Product mapProductDtoToProduct(ProductRequestDto productRequestDto){
-        VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(()->new RuntimeException());
-        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(()->new RuntimeException());
-        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(()->new RuntimeException());
-        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(()->new RuntimeException());
+        VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(UserNotFoundException::new);
+        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(CategoryNotFoundException::new);
+        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
+        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(WarrantyNotFoundException::new);
         Product product = new Product();
         product.setVendorProfile(vendorProfile);
         product.setName(productRequestDto.getName());

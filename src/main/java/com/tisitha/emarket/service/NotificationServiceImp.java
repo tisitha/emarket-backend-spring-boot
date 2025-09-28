@@ -2,6 +2,7 @@ package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.NotificationPageDto;
 import com.tisitha.emarket.dto.NotificationResponseDto;
+import com.tisitha.emarket.exception.NotificationNotFoundException;
 import com.tisitha.emarket.model.Notification;
 import com.tisitha.emarket.repo.NotificationRepository;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class NotificationServiceImp implements NotificationService{
 
     @Override
     public void markAsSeen(UUID notificationId,Authentication authentication) {
-        Notification notification = notificationRepository.findByIdAndUserEmail(notificationId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
+        Notification notification = notificationRepository.findByIdAndUserEmail(notificationId,authentication.getName()).orElseThrow(NotificationNotFoundException::new);
         notification.setSeen(true);
         notificationRepository.save(notification);
     }

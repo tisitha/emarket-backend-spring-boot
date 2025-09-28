@@ -5,6 +5,7 @@ import com.tisitha.emarket.dto.OrderPageSortDto;
 import com.tisitha.emarket.dto.OrderRequestDto;
 import com.tisitha.emarket.dto.OrderResponseDto;
 import com.tisitha.emarket.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,18 +29,18 @@ public class OrderController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<Void> addOrder(@RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
+    public ResponseEntity<Void> addOrder(@Valid @RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
         orderService.addOrder(orderRequestDto,authentication);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/order/vendor")
-    public  ResponseEntity<OrderPageSortDto> getOrdersByVendor(@RequestBody OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
+    public  ResponseEntity<OrderPageSortDto> getOrdersByVendor(@Valid @RequestBody OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
         return new ResponseEntity<>(orderService.getOrdersByVendor(orderGetRequestDto,authentication),HttpStatus.OK);
     }
 
     @GetMapping("/order/user")
-    public ResponseEntity<OrderPageSortDto> getOrdersByUser(@RequestBody OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
+    public ResponseEntity<OrderPageSortDto> getOrdersByUser(@Valid @RequestBody OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
         return new ResponseEntity<>(orderService.getOrdersByUser(orderGetRequestDto,authentication),HttpStatus.OK);
     }
 

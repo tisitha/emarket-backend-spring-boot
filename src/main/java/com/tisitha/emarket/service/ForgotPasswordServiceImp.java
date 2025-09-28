@@ -2,6 +2,10 @@ package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.ChangePasswordDto;
 import com.tisitha.emarket.dto.Mailbody;
+import com.tisitha.emarket.exception.OtpExpiredException;
+import com.tisitha.emarket.exception.OtpNotFoundException;
+import com.tisitha.emarket.exception.PasswordNotMatchException;
+import com.tisitha.emarket.exception.UserNotFoundException;
 import com.tisitha.emarket.model.ForgotPassword;
 import com.tisitha.emarket.model.User;
 import com.tisitha.emarket.repo.ForgotPasswordRepository;
@@ -27,7 +31,7 @@ public class ForgotPasswordServiceImp implements ForgotPasswordService{
 
     @Override
     public void verifyEmail(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException(""));
+        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         forgotPasswordRepository.deleteByUserId(user.getId());
         int otp = otpGenerator();
         Mailbody mailbody = Mailbody.builder()
@@ -47,25 +51,25 @@ public class ForgotPasswordServiceImp implements ForgotPasswordService{
 
     @Override
     public void verifyOtp(Integer otp,String email){
-        User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException(""));
-        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp,user).orElseThrow(()->new RuntimeException(""));
+        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException());
+        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp,user).orElseThrow(()->new OtpNotFoundException());
         if (fp.getExpirationTime().before(Date.from(Instant.now()))){
             forgotPasswordRepository.deleteById(fp.getId());
-            throw new RuntimeException("");
+            throw new OtpNotFoundException();
         }
     }
 
     @Override
     @Transactional
     public void changePasswordHandler(ChangePasswordDto changePasswordDto, Integer otp, String email){
-        User user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException(""));
-        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp,user).orElseThrow(()->new RuntimeException(""));
+        User user = userRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException());
+        ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otp,user).orElseThrow(()->new OtpNotFoundException());
         if (fp.getExpirationTime().before(Date.from(Instant.now()))){
             forgotPasswordRepository.deleteById(fp.getId());
-            throw new RuntimeException("");
+            throw new OtpExpiredException();
         }
         if(!Objects.equals(changePasswordDto.password(),changePasswordDto.repeatPassword())){
-            throw new RuntimeException("");
+            throw new PasswordNotMatchException();
         }
         String encodedPassword = passwordEncoder.encode(changePasswordDto.password());
         user.setPassword(encodedPassword);

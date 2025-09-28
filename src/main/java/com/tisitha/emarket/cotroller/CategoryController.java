@@ -3,6 +3,7 @@ package com.tisitha.emarket.cotroller;
 import com.tisitha.emarket.dto.CategoryRequestDto;
 import com.tisitha.emarket.dto.CategoryResponseDto;
 import com.tisitha.emarket.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +36,12 @@ public class CategoryController {
     }
 
     @PostMapping("/admin/category")
-    public ResponseEntity<CategoryResponseDto> addCategory(@RequestBody CategoryRequestDto categoryRequestDto){
+    public ResponseEntity<CategoryResponseDto> addCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto){
         return new ResponseEntity<>(categoryService.addCategoryTitle(categoryRequestDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/category/{id}")
-    public ResponseEntity<CategoryResponseDto> editCategory(@PathVariable Long categoryId, @RequestBody CategoryRequestDto categoryRequestDto){
+    public ResponseEntity<CategoryResponseDto> editCategory(@PathVariable Long categoryId,@RequestBody CategoryRequestDto categoryRequestDto){
         return new ResponseEntity<>(categoryService.updateCategoryTitle(categoryId,categoryRequestDto), HttpStatus.CREATED);
     }
 

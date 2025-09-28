@@ -14,7 +14,7 @@ public interface QuestionService {
 
     QuestionResponseDto getQuestionTitle(Long questionId);
 
-    QuestionResponseDto addQuestionTitle(QuestionRequestDto questionRequestDto);
+    QuestionResponseDto addQuestionTitle(QuestionRequestDto questionRequestDto,Authentication authentication);
 
     QuestionResponseDto updateQuestionTitle(Long questionId,QuestionRequestDto questionRequestDto,Authentication authentication);
 

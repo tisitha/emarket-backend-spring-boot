@@ -13,7 +13,7 @@ public interface ReviewPassRepository extends JpaRepository<ReviewPass, UUID> {
 
     void deleteByUserIdAndProductId(UUID userId, UUID productId);
 
-    Boolean existsByProductIdUserEmail(UUID productId,String email);
+    Boolean existsByProductIdAndUserEmail(UUID productId, String email);
 
     void deleteByUserEmailAndProductId(String email, UUID productId);
 }

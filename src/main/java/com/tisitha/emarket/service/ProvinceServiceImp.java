@@ -2,6 +2,7 @@ package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.ProvinceRequestDto;
 import com.tisitha.emarket.dto.ProvinceResponseDto;
+import com.tisitha.emarket.exception.ProvinceNotFoundException;
 import com.tisitha.emarket.model.Province;
 import com.tisitha.emarket.repo.ProvinceRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ProvinceServiceImp implements ProvinceService{
 
     @Override
     public ProvinceResponseDto getProvinceTitle(Long provinceId) {
-        Province province = provinceRepository.findById(provinceId).orElseThrow(()->new RuntimeException(""));
+        Province province = provinceRepository.findById(provinceId).orElseThrow(ProvinceNotFoundException::new);
         return mapProvinceToProvinceDto(province);
     }
 
@@ -39,7 +40,7 @@ public class ProvinceServiceImp implements ProvinceService{
 
     @Override
     public ProvinceResponseDto updateProvinceTitle(Long provinceId,ProvinceRequestDto provinceRequestDto) {
-        Province oldProvince = provinceRepository.findById(provinceId).orElseThrow(()->new RuntimeException(""));
+        Province oldProvince = provinceRepository.findById(provinceId).orElseThrow(ProvinceNotFoundException::new);
         oldProvince.setName(provinceRequestDto.getName());
         Province newProvince = provinceRepository.save(oldProvince);
         return mapProvinceToProvinceDto(newProvince);
@@ -47,7 +48,7 @@ public class ProvinceServiceImp implements ProvinceService{
 
     @Override
     public void deleteProvinceTitle(Long provinceId) {
-        provinceRepository.findById(provinceId).orElseThrow(()->new RuntimeException(""));
+        provinceRepository.findById(provinceId).orElseThrow(ProvinceNotFoundException::new);
         provinceRepository.deleteById(provinceId);
     }
 

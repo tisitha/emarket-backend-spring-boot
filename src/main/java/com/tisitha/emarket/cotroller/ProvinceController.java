@@ -3,6 +3,7 @@ package com.tisitha.emarket.cotroller;
 import com.tisitha.emarket.dto.ProvinceRequestDto;
 import com.tisitha.emarket.dto.ProvinceResponseDto;
 import com.tisitha.emarket.service.ProvinceService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +26,12 @@ public class ProvinceController {
     }
 
     @PostMapping("admin/province")
-    public ResponseEntity<ProvinceResponseDto> addProvince(@RequestBody ProvinceRequestDto provinceRequestDto){
+    public ResponseEntity<ProvinceResponseDto> addProvince(@Valid @RequestBody ProvinceRequestDto provinceRequestDto){
         return new ResponseEntity<>(provinceService.addProvinceTitle(provinceRequestDto), HttpStatus.CREATED);
     }
 
     @PutMapping("admin/province/{id}")
-    public ResponseEntity<ProvinceResponseDto> editProvince(@PathVariable Long provinceId, @RequestBody ProvinceRequestDto provinceRequestDto){
+    public ResponseEntity<ProvinceResponseDto> editProvince(@PathVariable Long provinceId,@Valid  @RequestBody ProvinceRequestDto provinceRequestDto){
         return new ResponseEntity<>(provinceService.updateProvinceTitle(provinceId,provinceRequestDto), HttpStatus.CREATED);
     }
 

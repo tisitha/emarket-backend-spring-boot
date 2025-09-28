@@ -2,6 +2,9 @@ package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.CartItemRequestDto;
 import com.tisitha.emarket.dto.CartItemResponseDto;
+import com.tisitha.emarket.exception.CartItemNotFoundException;
+import com.tisitha.emarket.exception.ProductNotFoundException;
+import com.tisitha.emarket.exception.ProductOutOfStockException;
 import com.tisitha.emarket.model.CartItem;
 import com.tisitha.emarket.model.Product;
 import com.tisitha.emarket.model.User;
@@ -32,9 +35,9 @@ public class CartItemServiceImp implements CartItemService{
 
     @Override
     public CartItemResponseDto addCartItem(CartItemRequestDto cartItemRequestDto,Authentication authentication) {
-        Product product = productRepository.findById(cartItemRequestDto.getProductId()).orElseThrow(()->new RuntimeException(""));
+        Product product = productRepository.findById(cartItemRequestDto.getProductId()).orElseThrow(ProductNotFoundException::new);
         if(cartItemRequestDto.getQuantity()==0 || cartItemRequestDto.getQuantity()> product.getQuantity()){
-            throw new RuntimeException("");
+            throw new ProductOutOfStockException();
         }
         CartItem cartItem = new CartItem();
         cartItem.setUser((User)authentication.getPrincipal());
@@ -46,11 +49,11 @@ public class CartItemServiceImp implements CartItemService{
 
     @Override
     public CartItemResponseDto updateCartItem(UUID cartItemId, CartItemRequestDto cartItemRequestDto,Authentication authentication) {
-        Product product = productRepository.findById(cartItemRequestDto.getProductId()).orElseThrow(()->new RuntimeException(""));
+        Product product = productRepository.findById(cartItemRequestDto.getProductId()).orElseThrow(ProductNotFoundException::new);
         if(cartItemRequestDto.getQuantity()==0 || cartItemRequestDto.getQuantity()> product.getQuantity()){
-            throw new RuntimeException("");
+            throw new ProductOutOfStockException();
         }
-        CartItem cartItem = cartItemRepository.findByIdAndUserEmail(cartItemId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
+        CartItem cartItem = cartItemRepository.findByIdAndUserEmail(cartItemId,authentication.getName()).orElseThrow(CartItemNotFoundException::new);
         cartItem.setQuantity(cartItemRequestDto.getQuantity());
         CartItem newCartItem = cartItemRepository.save(cartItem);
         if(newCartItem.getQuantity()==0){
@@ -61,7 +64,7 @@ public class CartItemServiceImp implements CartItemService{
 
     @Override
     public void deleteCartItem(UUID cartItemId,Authentication authentication) {
-        cartItemRepository.findByIdAndUserEmail(cartItemId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
+        cartItemRepository.findByIdAndUserEmail(cartItemId,authentication.getName()).orElseThrow(CartItemNotFoundException::new);
         cartItemRepository.deleteById(cartItemId);
     }
 

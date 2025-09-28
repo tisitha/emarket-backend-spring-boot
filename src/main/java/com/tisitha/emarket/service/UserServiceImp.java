@@ -1,6 +1,7 @@
 package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.*;
+import com.tisitha.emarket.exception.*;
 import com.tisitha.emarket.model.Province;
 import com.tisitha.emarket.model.Role;
 import com.tisitha.emarket.model.User;
@@ -34,12 +35,12 @@ public class UserServiceImp implements UserService{
     @Override
     public void registerUserAccount(UserRegisterDto userRegisterDto) {
         if(!userRegisterDto.getPassword().equals(userRegisterDto.getPasswordRepeat())){
-            throw new RuntimeException("");
+            throw new PasswordNotMatchException();
         }
         if(userRepository.existsByEmail(userRegisterDto.getEmail())){
-            throw new RuntimeException("");
+            throw new EmailTakenException();
         }
-        Province province = provinceRepository.findById(userRegisterDto.getProvinceId()).orElseThrow(()->new RuntimeException(""));
+        Province province = provinceRepository.findById(userRegisterDto.getProvinceId()).orElseThrow(()->new ProvinceNotFoundException());
         User user = new User();
         user.setFname(userRegisterDto.getFname());
         user.setLname(userRegisterDto.getLname());
@@ -56,12 +57,12 @@ public class UserServiceImp implements UserService{
     @Transactional
     public void registerVendorAccount(VendorRegisterDto vendorRegisterDto) {
         if(!vendorRegisterDto.getPassword().equals(vendorRegisterDto.getPasswordRepeat())){
-            throw new RuntimeException("");
+            throw new PasswordNotMatchException();
         }
         if(userRepository.existsByEmail(vendorRegisterDto.getEmail())){
-            throw new RuntimeException("");
+            throw new UserNotFoundException();
         }
-        Province province = provinceRepository.findById(vendorRegisterDto.getProvinceId()).orElseThrow(()->new RuntimeException(""));
+        Province province = provinceRepository.findById(vendorRegisterDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
         User user = new User();
         user.setFname(vendorRegisterDto.getFname());
         user.setLname(vendorRegisterDto.getLname());
@@ -85,23 +86,23 @@ public class UserServiceImp implements UserService{
     public String loginAccount(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(),loginDto.getPassword()));
         if(!authentication.isAuthenticated()){
-            throw new RuntimeException("");
+            throw new UnauthorizeAccessException();
         }
         return jwtUtil.generateToken(loginDto.getEmail());
     }
 
     @Override
     public void updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
-        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException(""));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),userUpdateDTO.getCurrentPassword()));
         if(!authentication.isAuthenticated()){
-            throw new RuntimeException("");
+            throw new UnauthorizeAccessException();
         }
         if(userRepository.existsByEmail(userUpdateDTO.getEmail()) && userUpdateDTO.getEmail() != null){
-            throw new RuntimeException("");
+            throw new EmailTakenException();
         }
         if(!userUpdateDTO.getPassword().equals(userUpdateDTO.getPasswordRepeat())){
-            throw new RuntimeException("");
+            throw new PasswordNotMatchException();
         }
         if (userUpdateDTO.getEmail() != null) {
             user.setEmail(userUpdateDTO.getEmail());
@@ -120,17 +121,17 @@ public class UserServiceImp implements UserService{
     @Override
     @Transactional
     public void updateVendor(UUID id, VendorUpdateDto vendorUpdateDto) {
-        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException(""));
-        VendorProfile vendorProfile = vendorProfileRepository.findById(id).orElseThrow(()->new RuntimeException(""));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        VendorProfile vendorProfile = vendorProfileRepository.findById(id).orElseThrow(InvalidInputException::new);
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),vendorUpdateDto.getCurrentPassword()));
         if(!authentication.isAuthenticated()){
-            throw new RuntimeException("");
+            throw new UnauthorizeAccessException();
         }
         if(userRepository.existsByEmail(vendorUpdateDto.getEmail()) && vendorUpdateDto.getEmail() != null){
-            throw new RuntimeException("");
+            throw new EmailTakenException();
         }
         if(!vendorUpdateDto.getPassword().equals(vendorUpdateDto.getPasswordRepeat())){
-            throw new RuntimeException("");
+            throw new PasswordNotMatchException();
         }
         if (vendorUpdateDto.getEmail() != null) {
             user.setEmail(vendorUpdateDto.getEmail());
@@ -152,10 +153,10 @@ public class UserServiceImp implements UserService{
 
     @Override
     public void deleteUser(UUID id, PasswordDTO pass) {
-        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException(""));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),pass.password()));
         if(!authentication.isAuthenticated()){
-            throw new RuntimeException("");
+            throw new UnauthorizeAccessException();
         }
         userRepository.deleteById(user.getId());
     }

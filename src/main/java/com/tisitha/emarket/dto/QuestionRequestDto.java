@@ -17,6 +17,4 @@ public class QuestionRequestDto {
 
     private UUID productId;
 
-    private UUID userId;
-
 }

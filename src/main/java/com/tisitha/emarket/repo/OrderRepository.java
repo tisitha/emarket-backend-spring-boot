@@ -16,5 +16,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     Page<Order> findAllByUserEmail(String email, Pageable pageable);
 
-    Optional<Order> findByIdAndVendorProfileUserEmail(String email);
+    Optional<Order> findByIdAndVendorProfileUserEmail(UUID orderId,String email);
 }

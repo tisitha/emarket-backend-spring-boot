@@ -3,8 +3,6 @@ package com.tisitha.emarket.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 public class OrderGetRequestDto {
 

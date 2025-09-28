@@ -4,6 +4,9 @@ import com.tisitha.emarket.dto.QuestionGetRequestDto;
 import com.tisitha.emarket.dto.QuestionPageSortDto;
 import com.tisitha.emarket.dto.QuestionRequestDto;
 import com.tisitha.emarket.dto.QuestionResponseDto;
+import com.tisitha.emarket.exception.ProductNotFoundException;
+import com.tisitha.emarket.exception.QuestionNotFoundException;
+import com.tisitha.emarket.exception.UserNotFoundException;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.NotificationRepository;
 import com.tisitha.emarket.repo.ProductRepository;
@@ -48,7 +51,7 @@ public class QuestionServiceImp implements QuestionService{
     public QuestionPageSortDto getUnansweredQuestionTitles(QuestionGetRequestDto questionGetRequestDto, Authentication authentication) {
         Sort sort = questionGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(questionGetRequestDto.getSortBy()).ascending():Sort.by(questionGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(questionGetRequestDto.getPageNumber(),questionGetRequestDto.getPageSize(),sort);
-        Page<Question> questions =questionRepository.findAllByProductVendorProfileEmailAndAnswerIsNull(authentication.getName(),pageable);
+        Page<Question> questions =questionRepository.findAllByProductVendorProfileUserEmailAndAnswerIsNull(authentication.getName(),pageable);
         return new QuestionPageSortDto(
                 questions.getContent().stream().map(this::mapQuestionToQuestionDto).toList(),
                 questions.getTotalElements(),
@@ -59,19 +62,19 @@ public class QuestionServiceImp implements QuestionService{
 
     @Override
     public QuestionResponseDto getQuestionTitle(Long questionId) {
-        Question question =questionRepository.findById(questionId).orElseThrow(()->new RuntimeException(""));
+        Question question =questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
         return mapQuestionToQuestionDto(question);
     }
 
     @Override
     @Transactional
-    public QuestionResponseDto addQuestionTitle(QuestionRequestDto questionRequestDto) {
+    public QuestionResponseDto addQuestionTitle(QuestionRequestDto questionRequestDto,Authentication authentication) {
         Question question = new Question();
         question.setQuestion(questionRequestDto.getQuestion());
         question.setAnswer(questionRequestDto.getAnswer());
-        Product product = productRepository.findById(questionRequestDto.getProductId()).orElseThrow(()->new RuntimeException(""));
+        Product product = productRepository.findById(questionRequestDto.getProductId()).orElseThrow(ProductNotFoundException::new);
         question.setProduct(product);
-        User user = userRepository.findById(questionRequestDto.getUserId()).orElseThrow(()->new RuntimeException(""));
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new);
         question.setUser(user);
         question.setDate(new Date());
         Question newQuestion = questionRepository.save(question);
@@ -89,7 +92,7 @@ public class QuestionServiceImp implements QuestionService{
     @Override
     @Transactional
     public QuestionResponseDto updateQuestionTitle(Long questionId, QuestionRequestDto questionRequestDto,Authentication authentication) {
-        Question question =questionRepository.findByIdAndProductVendorProfileEmail(questionId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
+        Question question =questionRepository.findByIdAndProductVendorProfileUserEmail(questionId,authentication.getName()).orElseThrow(QuestionNotFoundException::new);
         question.setAnswer(questionRequestDto.getAnswer());
         Question newQuestion = questionRepository.save(question);
         Notification notification = new Notification();
@@ -105,7 +108,7 @@ public class QuestionServiceImp implements QuestionService{
 
     @Override
     public void deleteQuestionTitle(Long questionId,Authentication authentication) {
-        questionRepository.findById(questionId).orElseThrow(()->new RuntimeException(""));
+        questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
         questionRepository.deleteById(questionId);
     }
 

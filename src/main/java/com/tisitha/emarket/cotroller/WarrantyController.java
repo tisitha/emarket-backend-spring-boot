@@ -3,6 +3,7 @@ package com.tisitha.emarket.cotroller;
 import com.tisitha.emarket.dto.WarrantyRequestDto;
 import com.tisitha.emarket.dto.WarrantyResponseDto;
 import com.tisitha.emarket.service.WarrantyService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +26,12 @@ public class WarrantyController {
     }
 
     @PostMapping("/admin/warranty")
-    public ResponseEntity<WarrantyResponseDto> addWarrantyType(@RequestBody WarrantyRequestDto warrantyRequestDto){
+    public ResponseEntity<WarrantyResponseDto> addWarrantyType(@Valid @RequestBody WarrantyRequestDto warrantyRequestDto){
         return new ResponseEntity<>(warrantyService.addWarrantyTitle(warrantyRequestDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/warranty/{id}")
-    public ResponseEntity<WarrantyResponseDto> editWarrantyType(@PathVariable Long warrantyId,@RequestBody WarrantyRequestDto warrantyRequestDto){
+    public ResponseEntity<WarrantyResponseDto> editWarrantyType(@PathVariable Long warrantyId,@Valid @RequestBody WarrantyRequestDto warrantyRequestDto){
         return new ResponseEntity<>(warrantyService.updateWarrantyTitle(warrantyId,warrantyRequestDto), HttpStatus.CREATED);
     }
 

@@ -1,5 +1,6 @@
 package com.tisitha.emarket.service;
 
+import com.tisitha.emarket.exception.UserNotFoundException;
 import com.tisitha.emarket.model.User;
 import com.tisitha.emarket.repo.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,7 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(username);
         if(user.isEmpty()){
-            throw new RuntimeException("");
+            throw new UserNotFoundException();
         }
         return user.get();
     }

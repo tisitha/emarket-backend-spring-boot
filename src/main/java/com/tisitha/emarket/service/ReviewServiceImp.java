@@ -4,6 +4,8 @@ import com.tisitha.emarket.dto.ReviewGetRequestDto;
 import com.tisitha.emarket.dto.ReviewPageSortDto;
 import com.tisitha.emarket.dto.ReviewRequestDto;
 import com.tisitha.emarket.dto.ReviewResponseDto;
+import com.tisitha.emarket.exception.ProvinceNotFoundException;
+import com.tisitha.emarket.exception.ReviewNotFoundException;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.*;
 import lombok.RequiredArgsConstructor;
@@ -43,18 +45,18 @@ public class ReviewServiceImp implements ReviewService{
 
     @Override
     public ReviewResponseDto getReviewTitle(Long reviewId) {
-        Review review =reviewRepository.findById(reviewId).orElseThrow(()->new RuntimeException(""));
+        Review review =reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
         return mapReviewToReviewDto(review);
     }
 
     @Override
     @Transactional
     public ReviewResponseDto addReviewTitle(ReviewRequestDto reviewRequestDto, Authentication authentication) {
-        if(!reviewPassRepository.existsByProductIdUserEmail(reviewRequestDto.getProductId(),authentication.getName())){
-            throw new RuntimeException("");
+        if(!reviewPassRepository.existsByProductIdAndUserEmail(reviewRequestDto.getProductId(),authentication.getName())){
+            throw new ReviewNotFoundException();
         }
         reviewPassRepository.deleteByUserEmailAndProductId(authentication.getName(),reviewRequestDto.getProductId());
-        Product product = productRepository.findById(reviewRequestDto.getProductId()).orElseThrow(()->new RuntimeException(""));
+        Product product = productRepository.findById(reviewRequestDto.getProductId()).orElseThrow(ProvinceNotFoundException::new);
         User user = (User) authentication.getPrincipal();
         Review review = new Review();
         review.setBody(reviewRequestDto.getBody());
@@ -77,7 +79,7 @@ public class ReviewServiceImp implements ReviewService{
 
     @Override
     public ReviewResponseDto updateReviewTitle(Long reviewId, ReviewRequestDto reviewRequestDto, Authentication authentication) {
-        Review review = reviewRepository.findByIdAndUserEmail(reviewId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
+        Review review = reviewRepository.findByIdAndUserEmail(reviewId,authentication.getName()).orElseThrow(ReviewNotFoundException::new);
         review.setBody(reviewRequestDto.getBody());
         review.setRate(reviewRequestDto.getRate());
         review.setEdited(true);
@@ -87,7 +89,7 @@ public class ReviewServiceImp implements ReviewService{
 
     @Override
     public void deleteReviewTitle(Long reviewId, Authentication authentication) {
-        reviewRepository.findByIdAndUserEmail(reviewId,authentication.getName()).orElseThrow(()->new RuntimeException(""));
+        reviewRepository.findByIdAndUserEmail(reviewId,authentication.getName()).orElseThrow(ReviewNotFoundException::new);
         reviewRepository.deleteById(reviewId);
     }
 

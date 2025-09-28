@@ -2,6 +2,7 @@ package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.PaymentMethodRequestDto;
 import com.tisitha.emarket.dto.PaymentMethodResponseDto;
+import com.tisitha.emarket.exception.PaymentMethodNotFoundException;
 import com.tisitha.emarket.model.PaymentMethod;
 import com.tisitha.emarket.repo.PaymentMethodRepository;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class PaymentMethodServiceImp implements PaymentMethodService{
 
     @Override
     public PaymentMethodResponseDto getPaymentMethodTitle(Long paymentMethodId) {
-        PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId).orElseThrow(()->new RuntimeException(""));
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId).orElseThrow(PaymentMethodNotFoundException::new);
         return mapPaymentMethodToPaymentMethodDto(paymentMethod);
     }
 
@@ -39,7 +40,7 @@ public class PaymentMethodServiceImp implements PaymentMethodService{
 
     @Override
     public PaymentMethodResponseDto updatePaymentMethodTitle(Long paymentMethodId,PaymentMethodRequestDto paymentMethodRequestDto) {
-        PaymentMethod oldPaymentMethod = paymentMethodRepository.findById(paymentMethodId).orElseThrow(()->new RuntimeException(""));
+        PaymentMethod oldPaymentMethod = paymentMethodRepository.findById(paymentMethodId).orElseThrow(PaymentMethodNotFoundException::new);
         oldPaymentMethod.setName(paymentMethodRequestDto.getName());
         PaymentMethod newPaymentMethod = paymentMethodRepository.save(oldPaymentMethod);
         return mapPaymentMethodToPaymentMethodDto(newPaymentMethod);
@@ -47,7 +48,7 @@ public class PaymentMethodServiceImp implements PaymentMethodService{
 
     @Override
     public void deletePaymentMethodTitle(Long paymentMethodId) {
-        paymentMethodRepository.findById(paymentMethodId).orElseThrow(()->new RuntimeException(""));
+        paymentMethodRepository.findById(paymentMethodId).orElseThrow(PaymentMethodNotFoundException::new);
         paymentMethodRepository.deleteById(paymentMethodId);
     }
 

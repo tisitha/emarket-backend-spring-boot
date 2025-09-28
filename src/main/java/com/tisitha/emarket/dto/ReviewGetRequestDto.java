@@ -22,5 +22,6 @@ public class ReviewGetRequestDto {
     @Pattern(regexp = "asc|desc", flags = Pattern.Flag.CASE_INSENSITIVE, message = "dir must be either 'asc' or 'desc'")
     private String dir;
 
+    @NotNull(message = "Product Id is required")
     private UUID productId;
 }
