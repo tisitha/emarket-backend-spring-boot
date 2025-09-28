@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -92,20 +91,16 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public void updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),userUpdateDTO.getCurrentPassword()));
-        if(!authentication.isAuthenticated()){
+    public void updateUser(UserUpdateDTO userUpdateDTO, Authentication authentication) {
+        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),userUpdateDTO.getCurrentPassword())).isAuthenticated()){
             throw new UnauthorizeAccessException();
         }
-        if(userRepository.existsByEmail(userUpdateDTO.getEmail()) && userUpdateDTO.getEmail() != null){
+        User user = (User) authentication.getPrincipal();
+        if(userRepository.existsByEmail(userUpdateDTO.getEmail()) && !userUpdateDTO.getEmail().equals(authentication.getName()) && userUpdateDTO.getEmail() != null){
             throw new EmailTakenException();
         }
         if(!userUpdateDTO.getPassword().equals(userUpdateDTO.getPasswordRepeat())){
             throw new PasswordNotMatchException();
-        }
-        if (userUpdateDTO.getEmail() != null) {
-            user.setEmail(userUpdateDTO.getEmail());
         }
         Optional.ofNullable(userUpdateDTO.getFname()).ifPresent(user::setFname);
         Optional.ofNullable(userUpdateDTO.getLname()).ifPresent(user::setLname);
@@ -120,14 +115,13 @@ public class UserServiceImp implements UserService{
 
     @Override
     @Transactional
-    public void updateVendor(UUID id, VendorUpdateDto vendorUpdateDto) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        VendorProfile vendorProfile = vendorProfileRepository.findById(id).orElseThrow(InvalidInputException::new);
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),vendorUpdateDto.getCurrentPassword()));
-        if(!authentication.isAuthenticated()){
+    public void updateVendor(VendorUpdateDto vendorUpdateDto, Authentication authentication) {
+        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),vendorUpdateDto.getCurrentPassword())).isAuthenticated()){
             throw new UnauthorizeAccessException();
         }
-        if(userRepository.existsByEmail(vendorUpdateDto.getEmail()) && vendorUpdateDto.getEmail() != null){
+        User user = (User) authentication.getPrincipal();
+        VendorProfile vendorProfile = vendorProfileRepository.findById(user.getId()).orElseThrow(InvalidInputException::new);
+        if(userRepository.existsByEmail(vendorUpdateDto.getEmail()) && !vendorUpdateDto.getEmail().equals(authentication.getName()) && vendorUpdateDto.getEmail() != null){
             throw new EmailTakenException();
         }
         if(!vendorUpdateDto.getPassword().equals(vendorUpdateDto.getPasswordRepeat())){
@@ -152,12 +146,31 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public void deleteUser(UUID id, PasswordDTO pass) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),pass.password()));
-        if(!authentication.isAuthenticated()){
+    public void userUpdateToVendor(UserToVendorUpdateDto userToVendorUpdateDto, Authentication authentication) {
+        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),userToVendorUpdateDto.getCurrentPassword())).isAuthenticated()){
             throw new UnauthorizeAccessException();
         }
+        User user = (User) authentication.getPrincipal();
+        if(vendorProfileRepository.existsById(user.getId())){
+            throw new InvalidInputException();
+        }
+        VendorProfile vendorProfile = new VendorProfile();
+        vendorProfile.setVendorId(user.getId());
+        vendorProfile.setBusinessName(userToVendorUpdateDto.getBusinessName());
+        vendorProfile.setBankAccountNo(userToVendorUpdateDto.getBankAccountNo());
+        vendorProfile.setBank(userToVendorUpdateDto.getBank());
+        user.setRole(Role.VENDOR);
+        user.setVendorProfile(vendorProfile);
+        vendorProfile.setUser(userRepository.save(user));
+        vendorProfileRepository.save(vendorProfile);
+    }
+
+    @Override
+    public void deleteUser(PasswordDTO pass, Authentication authentication) {
+        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),pass.password())).isAuthenticated()){
+            throw new UnauthorizeAccessException();
+        }
+        User user = (User) authentication.getPrincipal();
         userRepository.deleteById(user.getId());
     }
 }

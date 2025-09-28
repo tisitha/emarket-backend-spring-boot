@@ -6,6 +6,7 @@ import com.tisitha.emarket.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -55,21 +56,27 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/user/user-update/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable UUID id,@Valid  @RequestBody UserUpdateDTO userUpdateDTO) {
-        userService.updateUser(id,userUpdateDTO);
+    @PutMapping("/user/user-update")
+    public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO, Authentication authentication) {
+        userService.updateUser(userUpdateDTO,authentication);
         return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
     }
 
-    @PutMapping("/user/vendor-update/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable UUID id,@Valid  @RequestBody VendorUpdateDto vendorUpdateDto) {
-        userService.updateVendor(id,vendorUpdateDto);
+    @PutMapping("/user/vendor-update")
+    public ResponseEntity<String> updateVendor(@Valid @RequestBody VendorUpdateDto vendorUpdateDto, Authentication authentication) {
+        userService.updateVendor(vendorUpdateDto,authentication);
         return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
     }
 
-    @DeleteMapping("/user/user-delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id,@Valid  @RequestBody PasswordDTO pass) {
-        userService.deleteUser(id,pass);
+    @PutMapping("/user/usertovendor-update")
+    public ResponseEntity<String> updateUserToVendor(@Valid @RequestBody UserToVendorUpdateDto userToVendorUpdateDto, Authentication authentication) {
+        userService.userUpdateToVendor(userToVendorUpdateDto,authentication);
+        return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user/user-delete")
+    public ResponseEntity<String> deleteUser(@Valid @RequestBody PasswordDTO pass, Authentication authentication) {
+        userService.deleteUser(pass,authentication);
         return new ResponseEntity<>("successfully account deleted",HttpStatus.OK);
     }
 
