@@ -81,7 +81,7 @@ public class AdminServiceImp implements AdminService{
         user.setPassword(passwordEncoder.encode(userRegisterDto.getPassword()));
         user.setPhoneNo(userRegisterDto.getPhoneNo());
         user.setAddress(userRegisterDto.getAddress());
-        user.setRole(Role.USER);
+        user.setRole(Role.ROLE_USER);
         user.setProvince(province);
         User newUser = userRepository.save(user);
         return mapAccountToAccountDto(newUser);

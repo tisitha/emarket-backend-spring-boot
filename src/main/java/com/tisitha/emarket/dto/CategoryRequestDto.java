@@ -16,7 +16,6 @@ public class CategoryRequestDto {
     @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
 
-    @NotNull(message = "Parent category Id is required")
     private Long parentId;
 
 }

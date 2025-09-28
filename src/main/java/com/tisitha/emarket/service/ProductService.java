@@ -19,9 +19,9 @@ public interface ProductService {
 
     List<ProductResponseDto> search(String text,int size);
 
-    ProductResponseDto addProduct(ProductRequestDto productRequestDto,Authentication authentication);
+    void addProduct(ProductRequestDto productRequestDto,Authentication authentication);
 
-    ProductResponseDto updateProduct(UUID id,ProductRequestDto productRequestDto,Authentication authentication);
+    void updateProduct(UUID id,ProductRequestDto productRequestDto,Authentication authentication);
 
     void deleteProduct(UUID id,Authentication authentication);
 

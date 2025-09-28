@@ -45,13 +45,15 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public ResponseEntity<ProductResponseDto> addProducts(@Valid @RequestBody ProductRequestDto productRequestDto, Authentication authentication){
-        return new ResponseEntity<>(productService.addProduct(productRequestDto,authentication), HttpStatus.CREATED);
+    public ResponseEntity<Void> addProducts(@Valid @RequestBody ProductRequestDto productRequestDto, Authentication authentication){
+        productService.addProduct(productRequestDto,authentication);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/product/{productId}")
-    public ResponseEntity<ProductResponseDto> updateProducts(@PathVariable UUID productId,@Valid @RequestBody ProductRequestDto productRequestDto,Authentication authentication){
-        return new ResponseEntity<>(productService.updateProduct(productId,productRequestDto,authentication), HttpStatus.CREATED);
+    public ResponseEntity<Void> updateProducts(@PathVariable UUID productId,@Valid @RequestBody ProductRequestDto productRequestDto,Authentication authentication){
+        productService.updateProduct(productId,productRequestDto,authentication);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/product/{productId}")

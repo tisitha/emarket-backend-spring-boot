@@ -1,7 +1,7 @@
 package com.tisitha.emarket.model;
 
 public enum Role {
-    USER,
-    VENDOR,
-    ADMIN
+    ROLE_USER,
+    ROLE_VENDOR,
+    ROLE_ADMIN
 }

@@ -39,7 +39,7 @@ public class UserServiceImp implements UserService{
         if(userRepository.existsByEmail(userRegisterDto.getEmail())){
             throw new EmailTakenException();
         }
-        Province province = provinceRepository.findById(userRegisterDto.getProvinceId()).orElseThrow(()->new ProvinceNotFoundException());
+        Province province = provinceRepository.findById(userRegisterDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
         User user = new User();
         user.setFname(userRegisterDto.getFname());
         user.setLname(userRegisterDto.getLname());
@@ -47,7 +47,7 @@ public class UserServiceImp implements UserService{
         user.setPassword(passwordEncoder.encode(userRegisterDto.getPassword()));
         user.setPhoneNo(userRegisterDto.getPhoneNo());
         user.setAddress(userRegisterDto.getAddress());
-        user.setRole(Role.USER);
+        user.setRole(Role.ROLE_USER);
         user.setProvince(province);
         userRepository.save(user);
     }
@@ -59,7 +59,7 @@ public class UserServiceImp implements UserService{
             throw new PasswordNotMatchException();
         }
         if(userRepository.existsByEmail(vendorRegisterDto.getEmail())){
-            throw new UserNotFoundException();
+            throw new EmailTakenException();
         }
         Province province = provinceRepository.findById(vendorRegisterDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
         User user = new User();
@@ -69,10 +69,9 @@ public class UserServiceImp implements UserService{
         user.setPassword(passwordEncoder.encode(vendorRegisterDto.getPassword()));
         user.setPhoneNo(vendorRegisterDto.getPhoneNo());
         user.setAddress(vendorRegisterDto.getAddress());
-        user.setRole(Role.VENDOR);
+        user.setRole(Role.ROLE_VENDOR);
         user.setProvince(province);
         User newUser = userRepository.save(user);
-        System.out.println(vendorRegisterDto);
         VendorProfile vendorProfile = new VendorProfile();
         vendorProfile.setUser(newUser);
         vendorProfile.setBusinessName(vendorRegisterDto.getBusinessName());
@@ -159,7 +158,7 @@ public class UserServiceImp implements UserService{
         vendorProfile.setBusinessName(userToVendorUpdateDto.getBusinessName());
         vendorProfile.setBankAccountNo(userToVendorUpdateDto.getBankAccountNo());
         vendorProfile.setBank(userToVendorUpdateDto.getBank());
-        user.setRole(Role.VENDOR);
+        user.setRole(Role.ROLE_VENDOR);
         user.setVendorProfile(vendorProfile);
         vendorProfile.setUser(userRepository.save(user));
         vendorProfileRepository.save(vendorProfile);

@@ -91,9 +91,9 @@ public class ProductServiceImp implements ProductService{
     }
 
     @Override
-    public ProductResponseDto updateProduct(UUID id,ProductRequestDto productRequestDto,Authentication authentication) {
+    public void updateProduct(UUID id,ProductRequestDto productRequestDto,Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        if(user.getId()!=productRequestDto.getVendorProfileId()){
+        if(!user.getId().equals(productRequestDto.getVendorProfileId())){
             throw new UnauthorizeAccessException();
         }
         VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(UserNotFoundException::new);
@@ -113,18 +113,31 @@ public class ProductServiceImp implements ProductService{
         product.setCategory(category);
         product.setProvince(province);
         product.setWarranty(warranty);
-        Product newProduct = productRepository.save(product);
-        return mapProductToProductDto(newProduct);
+        productRepository.save(product);
     }
 
     @Override
-    public ProductResponseDto addProduct(ProductRequestDto productRequestDto,Authentication authentication) {
+    public void addProduct(ProductRequestDto productRequestDto,Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        if(user.getId()!=productRequestDto.getVendorProfileId()){
-            throw new UnauthorizeAccessException();
-        }
-        Product newProduct = productRepository.save(mapProductDtoToProduct(productRequestDto));
-        return mapProductToProductDto(newProduct);
+        VendorProfile vendorProfile = vendorProfileRepository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
+        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(CategoryNotFoundException::new);
+        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
+        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(WarrantyNotFoundException::new);
+        Product product = new Product();
+        product.setVendorProfile(vendorProfile);
+        product.setName(productRequestDto.getName());
+        product.setImgUrl(productRequestDto.getImgUrl());
+        product.setDescription(productRequestDto.getDescription());
+        product.setPrice(productRequestDto.getPrice());
+        product.setDeal(productRequestDto.getDeal());
+        product.setCod(productRequestDto.isCod());
+        product.setFreeDelivery(productRequestDto.isFreeDelivery());
+        product.setBrand(productRequestDto.getBrand());
+        product.setCategory(category);
+        product.setProvince(province);
+        product.setWarranty(warranty);
+        product.setQuantity(productRequestDto.getQuantity());
+        productRepository.save(product);
     }
 
     @Override
@@ -157,27 +170,5 @@ public class ProductServiceImp implements ProductService{
                 product.getCartItems(),
                 product.getQuantity()
         );
-    }
-
-    private Product mapProductDtoToProduct(ProductRequestDto productRequestDto){
-        VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(UserNotFoundException::new);
-        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(CategoryNotFoundException::new);
-        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
-        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(WarrantyNotFoundException::new);
-        Product product = new Product();
-        product.setVendorProfile(vendorProfile);
-        product.setName(productRequestDto.getName());
-        product.setImgUrl(productRequestDto.getImgUrl());
-        product.setDescription(productRequestDto.getDescription());
-        product.setPrice(productRequestDto.getPrice());
-        product.setDeal(productRequestDto.getDeal());
-        product.setCod(productRequestDto.isCod());
-        product.setFreeDelivery(productRequestDto.isFreeDelivery());
-        product.setBrand(productRequestDto.getBrand());
-        product.setCategory(category);
-        product.setProvince(province);
-        product.setWarranty(warranty);
-        product.setQuantity(productRequestDto.getQuantity());
-        return product;
     }
 }

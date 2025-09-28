@@ -25,7 +25,7 @@ public class Category {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent")
     private Set<Category> children;
 
     @OneToMany(mappedBy = "category")

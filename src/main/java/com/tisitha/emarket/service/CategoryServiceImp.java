@@ -34,8 +34,10 @@ public class CategoryServiceImp implements CategoryService{
     public CategoryResponseDto addCategoryTitle(CategoryRequestDto categoryRequestDto) {
         Category category = new Category();
         category.setName(categoryRequestDto.getName());
-        Category parent = categoryRepository.findById(categoryRequestDto.getParentId()).orElseThrow(CategoryNotFoundException::new);
-        category.setParent(parent);
+        if(categoryRequestDto.getParentId()!=null){
+            Category parent = categoryRepository.findById(categoryRequestDto.getParentId()).orElseThrow(CategoryNotFoundException::new);
+            category.setParent(parent);
+        }
         Category newCategory = categoryRepository.save(category);
         return mapCategoryToCategoryDto(newCategory);
     }
@@ -44,8 +46,10 @@ public class CategoryServiceImp implements CategoryService{
     public CategoryResponseDto updateCategoryTitle(Long categoryId,CategoryRequestDto categoryRequestDto) {
         Category oldCategory = categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
         oldCategory.setName(categoryRequestDto.getName());
-        Category parent = categoryRepository.findById(categoryRequestDto.getParentId()).orElseThrow(CategoryNotFoundException::new);
-        oldCategory.setParent(parent);
+        if(categoryRequestDto.getParentId()!=null){
+            Category parent = categoryRepository.findById(categoryRequestDto.getParentId()).orElseThrow(CategoryNotFoundException::new);
+            oldCategory.setParent(parent);
+        }
         Category newCategory = categoryRepository.save(oldCategory);
         return mapCategoryToCategoryDto(newCategory);
     }
