@@ -43,12 +43,27 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProductOutOfStockException.class)
     public ProblemDetail ProductOutOfStockExceptionHandler(ProductOutOfStockException ex){
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,ex.getMessage());
     }
 
     @ExceptionHandler(UnauthorizeAccessException.class)
     public ProblemDetail UnauthorizeAccessExceptionHandler(UnauthorizeAccessException ex){
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,ex.getMessage());
+    }
+
+    @ExceptionHandler(CorruptFileException.class)
+    public ProblemDetail CorruptFileExceptionHandler(CorruptFileException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,ex.getMessage());
+    }
+
+    @ExceptionHandler(SupabaseUploadingErrorException.class)
+    public ProblemDetail SupabaseUploadingErrorExceptionHandler(SupabaseUploadingErrorException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidJsonFormatException.class)
+    public ProblemDetail InvalidJsonFormatExceptionHandler(InvalidJsonFormatException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

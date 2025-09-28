@@ -2,6 +2,7 @@ package com.tisitha.emarket.cotroller;
 
 import com.tisitha.emarket.dto.*;
 import com.tisitha.emarket.service.AdminService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class AdminController {
     }
 
     @GetMapping("/product")
-    ResponseEntity<ProductPageSortDto> getProducts(@RequestBody AdminPanelGetDto adminPanelGetDto){
+    ResponseEntity<ProductPageSortDto> getProducts(@Valid @RequestBody AdminPanelGetDto adminPanelGetDto){
         return new ResponseEntity<>(adminService.getProducts(adminPanelGetDto), HttpStatus.OK);
     }
 
@@ -30,7 +31,7 @@ public class AdminController {
     }
 
     @GetMapping("/account")
-    ResponseEntity<AccountPageSortDto> getAccounts(@RequestBody AdminPanelGetDto adminPanelGetDto){
+    ResponseEntity<AccountPageSortDto> getAccounts(@Valid @RequestBody AdminPanelGetDto adminPanelGetDto){
         return new ResponseEntity<>(adminService.getAccounts(adminPanelGetDto),HttpStatus.OK);
     }
 
@@ -40,7 +41,7 @@ public class AdminController {
     }
 
     @PostMapping("/account")
-    ResponseEntity<AccountResponseDto> addAdminAccount(@RequestBody UserRegisterDto userRegisterDto){
+    ResponseEntity<AccountResponseDto> addAdminAccount(@Valid @RequestBody UserRegisterDto userRegisterDto){
         return new ResponseEntity<>(adminService.addAdminAccount(userRegisterDto),HttpStatus.CREATED);
     }
 
@@ -51,7 +52,7 @@ public class AdminController {
     }
 
     @GetMapping("/review")
-    ResponseEntity<ReviewPageSortDto> getReviews(@RequestBody AdminPanelGetDto adminPanelGetDto){
+    ResponseEntity<ReviewPageSortDto> getReviews(@Valid @RequestBody AdminPanelGetDto adminPanelGetDto){
         return new ResponseEntity<>(adminService.getReviews(adminPanelGetDto),HttpStatus.OK);
     }
 
@@ -67,7 +68,7 @@ public class AdminController {
     }
 
     @GetMapping("/question")
-    ResponseEntity<QuestionPageSortDto> getQuestions(@RequestBody AdminPanelGetDto adminPanelGetDto){
+    ResponseEntity<QuestionPageSortDto> getQuestions(@Valid @RequestBody AdminPanelGetDto adminPanelGetDto){
         return new ResponseEntity<>(adminService.getQuestions(adminPanelGetDto),HttpStatus.OK);
     }
 

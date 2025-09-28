@@ -31,7 +31,7 @@ public class ProvinceController {
     }
 
     @PutMapping("admin/province/{id}")
-    public ResponseEntity<ProvinceResponseDto> editProvince(@PathVariable Long provinceId,@Valid  @RequestBody ProvinceRequestDto provinceRequestDto){
+    public ResponseEntity<ProvinceResponseDto> editProvince(@PathVariable Long provinceId,@Valid @RequestBody ProvinceRequestDto provinceRequestDto){
         return new ResponseEntity<>(provinceService.updateProvinceTitle(provinceId,provinceRequestDto), HttpStatus.CREATED);
     }
 

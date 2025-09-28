@@ -1,15 +1,19 @@
 package com.tisitha.emarket.cotroller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tisitha.emarket.dto.ProductGetRequestDto;
 import com.tisitha.emarket.dto.ProductPageSortDto;
 import com.tisitha.emarket.dto.ProductRequestDto;
 import com.tisitha.emarket.dto.ProductResponseDto;
+import com.tisitha.emarket.exception.InvalidJsonFormatException;
 import com.tisitha.emarket.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,9 +23,11 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductService productService;
+    private final ObjectMapper objectMapper;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ObjectMapper objectMapper) {
         this.productService = productService;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("/open/product")
@@ -45,14 +51,14 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public ResponseEntity<Void> addProducts(@Valid @RequestBody ProductRequestDto productRequestDto, Authentication authentication){
-        productService.addProduct(productRequestDto,authentication);
+    public ResponseEntity<Void> addProducts(@RequestPart String productRequestDto,@RequestPart MultipartFile file, Authentication authentication){
+        productService.addProduct(stringToProductRequestDto(productRequestDto),file,authentication);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/product/{productId}")
-    public ResponseEntity<Void> updateProducts(@PathVariable UUID productId,@Valid @RequestBody ProductRequestDto productRequestDto,Authentication authentication){
-        productService.updateProduct(productId,productRequestDto,authentication);
+    public ResponseEntity<Void> updateProducts(@PathVariable UUID productId,@RequestPart String productRequestDto,@RequestPart MultipartFile file,Authentication authentication){
+        productService.updateProduct(productId,stringToProductRequestDto(productRequestDto),file,authentication);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -60,6 +66,14 @@ public class ProductController {
     public ResponseEntity<Void> deleteProducts(@PathVariable UUID productId,Authentication authentication){
         productService.deleteProduct(productId,authentication);
         return ResponseEntity.ok().build();
+    }
+
+    private ProductRequestDto stringToProductRequestDto(String dataString){
+        try {
+            return objectMapper.readValue(dataString,ProductRequestDto.class);
+        } catch (JsonProcessingException e) {
+            throw new InvalidJsonFormatException("InputDto is invalid json format");
+        }
     }
 
 }

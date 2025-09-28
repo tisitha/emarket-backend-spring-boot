@@ -1,9 +1,6 @@
 package com.tisitha.emarket.service;
 
-import com.tisitha.emarket.dto.QuestionGetRequestDto;
-import com.tisitha.emarket.dto.QuestionPageSortDto;
-import com.tisitha.emarket.dto.QuestionRequestDto;
-import com.tisitha.emarket.dto.QuestionResponseDto;
+import com.tisitha.emarket.dto.*;
 import com.tisitha.emarket.exception.ProductNotFoundException;
 import com.tisitha.emarket.exception.QuestionNotFoundException;
 import com.tisitha.emarket.exception.UserNotFoundException;
@@ -71,7 +68,6 @@ public class QuestionServiceImp implements QuestionService{
     public QuestionResponseDto addQuestionTitle(QuestionRequestDto questionRequestDto,Authentication authentication) {
         Question question = new Question();
         question.setQuestion(questionRequestDto.getQuestion());
-        question.setAnswer(questionRequestDto.getAnswer());
         Product product = productRepository.findById(questionRequestDto.getProductId()).orElseThrow(ProductNotFoundException::new);
         question.setProduct(product);
         User user = userRepository.findByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new);
@@ -91,9 +87,9 @@ public class QuestionServiceImp implements QuestionService{
 
     @Override
     @Transactional
-    public QuestionResponseDto updateQuestionTitle(Long questionId, QuestionRequestDto questionRequestDto,Authentication authentication) {
-        Question question =questionRepository.findByIdAndProductVendorProfileUserEmail(questionId,authentication.getName()).orElseThrow(QuestionNotFoundException::new);
-        question.setAnswer(questionRequestDto.getAnswer());
+    public QuestionResponseDto updateQuestionTitle(AnswerRequestDto answerRequestDto, Authentication authentication) {
+        Question question =questionRepository.findByIdAndProductVendorProfileUserEmail(answerRequestDto.getQuestionId(),authentication.getName()).orElseThrow(QuestionNotFoundException::new);
+        question.setAnswer(answerRequestDto.getAnswer());
         Question newQuestion = questionRepository.save(question);
         Notification notification = new Notification();
         notification.setSeen(false);

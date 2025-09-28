@@ -1,9 +1,6 @@
 package com.tisitha.emarket.service;
 
-import com.tisitha.emarket.dto.QuestionGetRequestDto;
-import com.tisitha.emarket.dto.QuestionPageSortDto;
-import com.tisitha.emarket.dto.QuestionRequestDto;
-import com.tisitha.emarket.dto.QuestionResponseDto;
+import com.tisitha.emarket.dto.*;
 import org.springframework.security.core.Authentication;
 
 public interface QuestionService {
@@ -16,7 +13,7 @@ public interface QuestionService {
 
     QuestionResponseDto addQuestionTitle(QuestionRequestDto questionRequestDto,Authentication authentication);
 
-    QuestionResponseDto updateQuestionTitle(Long questionId,QuestionRequestDto questionRequestDto,Authentication authentication);
+    QuestionResponseDto updateQuestionTitle(AnswerRequestDto answerRequestDto, Authentication authentication);
 
     void deleteQuestionTitle(Long questionId, Authentication authentication);
 

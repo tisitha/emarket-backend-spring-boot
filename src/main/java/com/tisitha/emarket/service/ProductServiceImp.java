@@ -7,6 +7,7 @@ import com.tisitha.emarket.dto.ProductResponseDto;
 import com.tisitha.emarket.exception.*;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,8 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.UUID;
 
@@ -28,6 +31,7 @@ public class ProductServiceImp implements ProductService{
     private final WarrantyRepository warrantyRepository;
     private final CategoryRepository categoryRepository;
     private final ProvinceRepository provinceRepository;
+    private final SupabaseService supabaseService;
 
     @Override
     public ProductPageSortDto getProducts(ProductGetRequestDto productGetRequestDto) {
@@ -79,7 +83,7 @@ public class ProductServiceImp implements ProductService{
 
     @Override
     public ProductResponseDto getProduct(UUID id) {
-        Product product = productRepository.findById(id).orElseThrow(()->new ProductNotFoundException());
+        Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
         return mapProductToProductDto(product);
     }
 
@@ -91,47 +95,52 @@ public class ProductServiceImp implements ProductService{
     }
 
     @Override
-    public void updateProduct(UUID id,ProductRequestDto productRequestDto,Authentication authentication) {
+    public void updateProduct(UUID id,ProductRequestDto productRequestDto, MultipartFile file,Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        if(!user.getId().equals(productRequestDto.getVendorProfileId())){
+        VendorProfile vendorProfile = vendorProfileRepository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
+        Optional<Category> category = categoryRepository.findById(productRequestDto.getCategoryId());
+        Optional<Province> province = provinceRepository.findById(productRequestDto.getProvinceId());
+        Optional<Warranty> warranty = warrantyRepository.findById(productRequestDto.getWarrantyId());
+        Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
+        if(!product.getVendorProfile().equals(vendorProfile)){
             throw new UnauthorizeAccessException();
         }
-        VendorProfile vendorProfile = vendorProfileRepository.findById(productRequestDto.getVendorProfileId()).orElseThrow(UserNotFoundException::new);
-        Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(CategoryNotFoundException::new);
-        Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
-        Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(WarrantyNotFoundException::new);
-        Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
-        product.setVendorProfile(vendorProfile);
-        product.setName(productRequestDto.getName());
-        product.setImgUrl(productRequestDto.getImgUrl());
-        product.setDescription(productRequestDto.getDescription());
-        product.setPrice(productRequestDto.getPrice());
-        product.setDeal(productRequestDto.getDeal());
-        product.setCod(productRequestDto.isCod());
-        product.setFreeDelivery(productRequestDto.isFreeDelivery());
-        product.setBrand(productRequestDto.getBrand());
-        product.setCategory(category);
-        product.setProvince(province);
-        product.setWarranty(warranty);
+        if(!file.isEmpty()){
+            String imgUrl = supabaseService.upload(user.getId().toString(),file);
+            product.setImgUrl(imgUrl);
+        }
+        Optional.ofNullable(productRequestDto.getName()).ifPresent(product::setName);
+        Optional.ofNullable(productRequestDto.getDescription()).ifPresent(product::setDescription);
+        Optional.ofNullable(productRequestDto.getPrice()).ifPresent(product::setPrice);
+        Optional.ofNullable(productRequestDto.getDeal()).ifPresent(product::setDeal);
+        Optional.ofNullable(productRequestDto.getCod()).ifPresent(product::setCod);
+        Optional.ofNullable(productRequestDto.getFreeDelivery()).ifPresent(product::setFreeDelivery);
+        Optional.ofNullable(productRequestDto.getBrand()).ifPresent(product::setBrand);
+        category.ifPresent(product::setCategory);
+        province.ifPresent(product::setProvince);
+        warranty.ifPresent(product::setWarranty);
         productRepository.save(product);
     }
 
     @Override
-    public void addProduct(ProductRequestDto productRequestDto,Authentication authentication) {
+    public void addProduct(@Valid ProductRequestDto productRequestDto, MultipartFile file, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         VendorProfile vendorProfile = vendorProfileRepository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
         Category category = categoryRepository.findById(productRequestDto.getCategoryId()).orElseThrow(CategoryNotFoundException::new);
         Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
         Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(WarrantyNotFoundException::new);
         Product product = new Product();
+        if(!file.isEmpty()){
+            String imgUrl = supabaseService.upload(user.getId().toString(),file);
+            product.setImgUrl(imgUrl);
+        }
         product.setVendorProfile(vendorProfile);
         product.setName(productRequestDto.getName());
-        product.setImgUrl(productRequestDto.getImgUrl());
         product.setDescription(productRequestDto.getDescription());
         product.setPrice(productRequestDto.getPrice());
         product.setDeal(productRequestDto.getDeal());
-        product.setCod(productRequestDto.isCod());
-        product.setFreeDelivery(productRequestDto.isFreeDelivery());
+        product.setCod(productRequestDto.getCod());
+        product.setFreeDelivery(productRequestDto.getFreeDelivery());
         product.setBrand(productRequestDto.getBrand());
         product.setCategory(category);
         product.setProvince(province);
@@ -142,7 +151,8 @@ public class ProductServiceImp implements ProductService{
 
     @Override
     public void deleteProduct(UUID id,Authentication authentication) {
-        productRepository.findByIdAndVendorProfileUserEmail(id,authentication.getName()).orElseThrow(UnauthorizeAccessException::new);
+        Product product = productRepository.findByIdAndVendorProfileUserEmail(id,authentication.getName()).orElseThrow(UnauthorizeAccessException::new);
+        supabaseService.deleteFile(product.getImgUrl());
         productRepository.deleteById(id);
     }
 

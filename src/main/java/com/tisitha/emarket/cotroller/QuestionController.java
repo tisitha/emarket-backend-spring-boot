@@ -1,9 +1,6 @@
 package com.tisitha.emarket.cotroller;
 
-import com.tisitha.emarket.dto.QuestionGetRequestDto;
-import com.tisitha.emarket.dto.QuestionPageSortDto;
-import com.tisitha.emarket.dto.QuestionRequestDto;
-import com.tisitha.emarket.dto.QuestionResponseDto;
+import com.tisitha.emarket.dto.*;
 import com.tisitha.emarket.service.QuestionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,9 +33,9 @@ public class QuestionController {
         return new ResponseEntity<>(questionService.addQuestionTitle(questionRequestDto,authentication),HttpStatus.CREATED);
     }
 
-    @PutMapping("/question/{questionId}")
-    public ResponseEntity<QuestionResponseDto> updateQuestion(@PathVariable Long questionId,@Valid @RequestBody QuestionRequestDto questionRequestDto,Authentication authentication) {
-        return new ResponseEntity<>(questionService.updateQuestionTitle(questionId,questionRequestDto,authentication),HttpStatus.CREATED);
+    @PutMapping("/question/answer")
+    public ResponseEntity<QuestionResponseDto> updateQuestion(@Valid @RequestBody AnswerRequestDto answerRequestDto, Authentication authentication) {
+        return new ResponseEntity<>(questionService.updateQuestionTitle(answerRequestDto,authentication),HttpStatus.CREATED);
     }
 
     @DeleteMapping("/question/{questionId}")

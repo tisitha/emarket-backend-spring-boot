@@ -2,10 +2,7 @@ package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.*;
 import com.tisitha.emarket.exception.*;
-import com.tisitha.emarket.model.Province;
-import com.tisitha.emarket.model.Role;
-import com.tisitha.emarket.model.User;
-import com.tisitha.emarket.model.VendorProfile;
+import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.ProvinceRepository;
 import com.tisitha.emarket.repo.UserRepository;
 import com.tisitha.emarket.repo.VendorProfileRepository;
@@ -30,6 +27,7 @@ public class UserServiceImp implements UserService{
     private final VendorProfileRepository vendorProfileRepository;
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final SupabaseService supabaseService;
 
     @Override
     public void registerUserAccount(UserRegisterDto userRegisterDto) {

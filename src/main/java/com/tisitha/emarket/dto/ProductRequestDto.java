@@ -5,34 +5,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ProductRequestDto {
 
-    @NotNull(message = "Vendor Id is required")
-    private UUID vendorProfileId;
-
     @NotBlank
     @Size(max = 250)
     private String name;
-
-    private String imgUrl;
 
     private String description;
 
     @DecimalMin(value = "0.00", inclusive = true)
     @NotNull(message = "Price is required")
-    private double price;
+    private Double price;
 
     @DecimalMin(value = "0.00", inclusive = true)
-    private double deal;
+    private Double deal;
 
-    private boolean cod;
+    @NotNull
+    private Boolean cod;
 
-    private boolean freeDelivery;
+    @NotNull
+    private Boolean freeDelivery;
 
     private String brand;
 
@@ -45,7 +40,7 @@ public class ProductRequestDto {
     @NotNull(message = "Warranty Id is required")
     private Long warrantyId;
 
-    @NotNull
+    @NotNull(message = "Quantity is required")
     @Min(0)
     private Integer quantity;
 

@@ -7,18 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionRequestDto {
+public class AnswerRequestDto {
+
+    @NotNull(message = "Question Id is required")
+    private Long questionId;
 
     @NotBlank
     @Size(max = 500)
-    private String question;
-
-    @NotNull
-    private UUID productId;
-
+    private String answer;
 }
