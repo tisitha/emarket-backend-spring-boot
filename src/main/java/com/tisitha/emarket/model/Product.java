@@ -34,8 +34,7 @@ public class Product {
     @Column(nullable = false)
     private double price;
 
-    @Column(nullable = false)
-    private double deal;
+    private Double deal;
 
     @Column(nullable = false)
     private boolean cod;

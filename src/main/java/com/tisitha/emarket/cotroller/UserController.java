@@ -31,7 +31,7 @@ public class UserController {
         userService.registerVendorAccount(vendorRegisterDto);
     }
 
-    @GetMapping("/auth/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<String> loginAccount(@Valid @RequestBody LoginDto loginDto){
         return new ResponseEntity<>(userService.loginAccount(loginDto), HttpStatus.OK);
     }

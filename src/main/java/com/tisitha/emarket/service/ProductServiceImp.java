@@ -58,6 +58,13 @@ public class ProductServiceImp implements ProductService{
     }
 
     @Override
+    public List<ProductResponseDto> getDealProducts(int size) {
+        Pageable pageable = PageRequest.of(0,size);
+        Page<Product> productsPage = productRepository.findAllByDealIsNotNull(pageable);
+        return productsPage.getContent().stream().map(this::mapProductToProductDto).toList();
+    }
+
+    @Override
     public ProductPageSortDto getProductsByVendor(UUID vendorId, ProductGetRequestDto productGetRequestDto) {
         Sort sort = productGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(productGetRequestDto.getSortBy()).ascending():Sort.by(productGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(productGetRequestDto.getPageNumber(),productGetRequestDto.getPageSize(),sort);

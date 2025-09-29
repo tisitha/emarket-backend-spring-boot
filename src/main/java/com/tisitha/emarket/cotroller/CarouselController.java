@@ -7,7 +7,6 @@ import com.tisitha.emarket.dto.CarouselResponseDto;
 import com.tisitha.emarket.exception.InvalidJsonFormatException;
 import com.tisitha.emarket.service.CarouselService;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

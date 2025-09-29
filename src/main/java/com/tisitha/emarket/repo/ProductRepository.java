@@ -38,4 +38,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     Optional<Product> findByIdAndVendorProfileUserEmail(UUID id, String email);
 
     Page<Product> findByNameContainingIgnoreCase(String text, Pageable pageable);
+
+    Page<Product> findAllByDealIsNotNull(Pageable pageable);
 }
