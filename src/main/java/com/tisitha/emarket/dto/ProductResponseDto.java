@@ -23,13 +23,13 @@ public class ProductResponseDto {
 
     private String description;
 
-    private double price;
+    private Double price;
 
-    private double deal;
+    private Double deal;
 
-    private boolean cod;
+    private Boolean cod;
 
-    private boolean freeDelivery;
+    private Boolean freeDelivery;
 
     private String brand;
 

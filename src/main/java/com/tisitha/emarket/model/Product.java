@@ -1,5 +1,6 @@
 package com.tisitha.emarket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -50,6 +51,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<Review> reviews;
 
     @ManyToOne
@@ -61,17 +63,21 @@ public class Product {
     private Warranty warranty;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<Question> questions;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<CartItem> cartItems;
 
     private Integer quantity;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<Order> orders;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<ReviewPass> reviewPass;
 
 }

@@ -1,5 +1,6 @@
 package com.tisitha.emarket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,8 +22,10 @@ public class Province {
     private String name;
 
     @OneToMany(mappedBy = "province")
+    @JsonIgnore
     private List<Product> productList;
 
     @OneToMany(mappedBy = "province")
+    @JsonIgnore
     private List<User> userList;
 }

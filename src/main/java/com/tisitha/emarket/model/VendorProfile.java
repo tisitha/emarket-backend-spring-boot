@@ -1,5 +1,6 @@
 package com.tisitha.emarket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,9 +33,11 @@ public class VendorProfile {
     private String bank;
 
     @OneToMany(mappedBy = "vendorProfile")
+    @JsonIgnore
     private List<Product> products;
 
     @OneToMany(mappedBy = "vendorProfile")
+    @JsonIgnore
     private List<Order> orders;
 
 }

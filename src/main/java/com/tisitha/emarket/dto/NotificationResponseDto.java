@@ -14,7 +14,7 @@ public class NotificationResponseDto {
 
     private String message;
 
-    private boolean seen;
+    private Boolean seen;
 
     private LocalDateTime dateAndTime;
 

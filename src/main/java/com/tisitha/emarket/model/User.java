@@ -1,5 +1,6 @@
 package com.tisitha.emarket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -50,27 +51,35 @@ public class User implements UserDetails {
     private Province province;
 
     @OneToOne(mappedBy = "user")
+    @JsonIgnore
     private VendorProfile vendorProfile;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Question> questions;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<CartItem> cartItems;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Order> order;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<ReviewPass> reviewPass;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Notification> notifications;
 
     @OneToOne(mappedBy = "user")
+    @JsonIgnore
     private ForgotPassword forgotPassword;
 
     @Override
