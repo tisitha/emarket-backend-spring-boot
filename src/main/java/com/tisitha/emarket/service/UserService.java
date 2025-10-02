@@ -11,7 +11,7 @@ public interface UserService {
 
     void registerVendorAccount(VendorRegisterDto vendorRegisterDto);
 
-    String loginAccount(LoginDto loginDto);
+    LoginResponseDto loginAccount(LoginDto loginDto);
 
     void updateUser(UserUpdateDTO userUpdateDTO, Authentication authentication);
 

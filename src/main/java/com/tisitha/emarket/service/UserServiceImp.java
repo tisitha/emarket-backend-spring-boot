@@ -79,12 +79,19 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public String loginAccount(LoginDto loginDto) {
+    public LoginResponseDto loginAccount(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(),loginDto.getPassword()));
         if(!authentication.isAuthenticated()){
             throw new UnauthorizeAccessException();
         }
-        return jwtUtil.generateToken(loginDto.getEmail());
+        String accessToken = jwtUtil.generateToken(loginDto.getEmail());
+        User user = userRepository.findByEmail(loginDto.getEmail()).orElseThrow(UnauthorizeAccessException::new);
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setId(user.getId());
+        loginResponseDto.setName(user.getFname());
+        loginResponseDto.setRole(user.getRole().name());
+        loginResponseDto.setToken(accessToken);
+        return loginResponseDto;
     }
 
     @Override

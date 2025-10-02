@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<String> loginAccount(@Valid @RequestBody LoginDto loginDto){
+    public ResponseEntity<LoginResponseDto> loginAccount(@Valid @RequestBody LoginDto loginDto){
         return new ResponseEntity<>(userService.loginAccount(loginDto), HttpStatus.OK);
     }
 
