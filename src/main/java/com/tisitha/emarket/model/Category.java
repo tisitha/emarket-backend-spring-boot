@@ -27,6 +27,7 @@ public class Category {
     private Category parent;
 
     @OneToMany(mappedBy = "parent")
+    @JsonIgnore
     private Set<Category> children;
 
     @OneToMany(mappedBy = "category")

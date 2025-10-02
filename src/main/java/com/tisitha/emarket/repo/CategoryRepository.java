@@ -2,6 +2,8 @@ package com.tisitha.emarket.repo;
 
 import com.tisitha.emarket.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,5 +14,8 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     List<Category> findByParentIsNull();
 
     List<Category> findByParentId(Long id);
+
+    @Query("SELECT c.id FROM Category c WHERE c.parent.id = :parentId")
+    List<Long> findIdsByParentId(@Param("parentId")Long parentId);
 
 }

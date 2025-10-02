@@ -17,10 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +32,21 @@ public class ProductServiceImp implements ProductService{
 
     @Override
     public ProductPageSortDto getProducts(ProductGetRequestDto productGetRequestDto) {
+        List<Long> categoryIds = new ArrayList<>();
+        Stack<Long> stack = new Stack<>();
+        stack.push(productGetRequestDto.getCategoryId());
+        while(!stack.empty()){
+            Long currentCategoryId = stack.pop();
+            categoryIds.add(currentCategoryId);
+            List<Long> list = categoryRepository.findIdsByParentId(currentCategoryId);
+            for(Long id:list){
+                stack.push(id);
+            }
+        }
         Sort sort = productGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(productGetRequestDto.getSortBy()).ascending():Sort.by(productGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(productGetRequestDto.getPageNumber(),productGetRequestDto.getPageSize(),sort);
-        Page<Product> productsPage = productRepository.findAllByCategoryIdAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqual(
-                productGetRequestDto.getCategoryId(),
+        Page<Product> productsPage = productRepository.findAllByCategoryIdInAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqual(
+                categoryIds,
                 productGetRequestDto.isFreeDelivery()?List.of(true):List.of(true,false),
                 productGetRequestDto.isCod()?List.of(true):List.of(true,false),
                 productGetRequestDto.getProvinceIds(),
@@ -59,7 +67,8 @@ public class ProductServiceImp implements ProductService{
 
     @Override
     public List<ProductResponseDto> getDealProducts(int size) {
-        Pageable pageable = PageRequest.of(0,size);
+        Sort sort = Sort.by("deal").ascending();
+        Pageable pageable = PageRequest.of(0,size,sort);
         Page<Product> productsPage = productRepository.findAllByDealIsNotNull(pageable);
         return productsPage.getContent().stream().map(this::mapProductToProductDto).toList();
     }

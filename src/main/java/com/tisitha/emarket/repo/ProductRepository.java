@@ -13,8 +13,8 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
-    Page<Product> findAllByCategoryIdAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqual(
-            Long categoryId,
+    Page<Product> findAllByCategoryIdInAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqual(
+            List<Long> categoryIds,
             List<Boolean> freeDeliveries,
             List<Boolean> cods,
             List<Long> provinces,
