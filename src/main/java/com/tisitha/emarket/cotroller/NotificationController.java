@@ -29,4 +29,10 @@ public class NotificationController {
         notificationService.markAsSeen(notificationId,authentication);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/mark/all")
+    public ResponseEntity<Void> markAllUnseenAsSeenOfUser(Authentication authentication) {
+        notificationService.markAllUnseenAsSeenOfUser(authentication);
+        return ResponseEntity.ok().build();
+    }
 }

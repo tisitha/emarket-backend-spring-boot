@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -28,7 +29,8 @@ public class NotificationServiceImp implements NotificationService{
         Sort sort = Sort.by("dateAndTime").descending();
         Pageable pageable = PageRequest.of(0,pageSize,sort);
         Page<Notification> notifications = notificationRepository.findByUserEmail(authentication.getName(),pageable);
-        return new NotificationPageDto(notifications.getContent().stream().map(this::mapNotificationToDto).toList(),notifications.isLast());
+        int newNotificationCount = notificationRepository.countBySeenAndUserEmail(false, authentication.getName());
+        return new NotificationPageDto(notifications.getContent().stream().map(this::mapNotificationToDto).toList(),newNotificationCount,notifications.isLast());
     }
 
     @Override
@@ -38,10 +40,18 @@ public class NotificationServiceImp implements NotificationService{
         notificationRepository.save(notification);
     }
 
+    @Override
+    @Transactional
+    public void markAllUnseenAsSeenOfUser(Authentication authentication) {
+        notificationRepository.markUnseenAsSeenOfUserEmail(authentication.getName());
+    }
+
     private NotificationResponseDto mapNotificationToDto(Notification notification){
         return new NotificationResponseDto(
                 notification.getId(),
                 notification.getMessage(),
+                notification.getAttachedId(),
+                notification.getNotificationType(),
                 notification.isSeen(),
                 notification.getDateAndTime()
         );

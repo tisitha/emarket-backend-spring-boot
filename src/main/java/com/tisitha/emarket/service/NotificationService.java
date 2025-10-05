@@ -10,4 +10,6 @@ public interface NotificationService {
     NotificationPageDto getNotificationOfUser(Integer pageSize, Authentication authentication);
 
     void markAsSeen(UUID notificationId,Authentication authentication);
+
+    void markAllUnseenAsSeenOfUser(Authentication authentication);
 }

@@ -1,5 +1,6 @@
 package com.tisitha.emarket.dto;
 
+import com.tisitha.emarket.model.NotificationType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,6 +14,10 @@ public class NotificationResponseDto {
     private UUID id;
 
     private String message;
+
+    private String attachedId;
+
+    private NotificationType notificationType;
 
     private Boolean seen;
 
