@@ -73,7 +73,7 @@ public class CategoryServiceImp implements CategoryService{
     }
 
     private CategoryResponseDto mapCategoryToCategoryDto(Category category){
-        return new CategoryResponseDto(category.getId(),category.getName(),category.getParent(),category.getChildren(),category.getProductList());
+        return new CategoryResponseDto(category.getId(),category.getName());
     }
 
 }

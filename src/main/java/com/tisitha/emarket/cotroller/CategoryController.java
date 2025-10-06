@@ -30,7 +30,7 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.getRootCategoryTitles(), HttpStatus.OK);
     }
 
-    @GetMapping("/open/category/sub/{id}")
+    @GetMapping("/open/category/sub/{parentId}")
     public ResponseEntity<List<CategoryResponseDto>> getSubCategories(@PathVariable Long parentId){
         return new ResponseEntity<>(categoryService.getSubCategoryTitles(parentId), HttpStatus.OK);
     }
