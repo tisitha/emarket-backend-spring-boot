@@ -43,6 +43,14 @@ public class ProductServiceImp implements ProductService{
                 stack.push(id);
             }
         }
+        if(productGetRequestDto.getProvinceIds().isEmpty()){
+            List<Province> provinces = provinceRepository.findAll();
+            productGetRequestDto.setProvinceIds(provinces.stream().map(Province::getId).toList());
+        }
+        if(productGetRequestDto.getWarrantyIds().isEmpty()){
+            List<Warranty> warranties = warrantyRepository.findAll();
+            productGetRequestDto.setWarrantyIds(warranties.stream().map(Warranty::getId).toList());
+        }
         Sort sort = productGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(productGetRequestDto.getSortBy()).ascending():Sort.by(productGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(productGetRequestDto.getPageNumber(),productGetRequestDto.getPageSize(),sort);
         Page<Product> productsPage = productRepository.findAllByCategoryIdInAndFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqual(
@@ -77,6 +85,14 @@ public class ProductServiceImp implements ProductService{
     public ProductPageSortDto getProductsByVendor(UUID vendorId, ProductGetRequestDto productGetRequestDto) {
         Sort sort = productGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(productGetRequestDto.getSortBy()).ascending():Sort.by(productGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(productGetRequestDto.getPageNumber(),productGetRequestDto.getPageSize(),sort);
+        if(productGetRequestDto.getProvinceIds().isEmpty()){
+            List<Province> provinces = provinceRepository.findAll();
+            productGetRequestDto.setProvinceIds(provinces.stream().map(Province::getId).toList());
+        }
+        if(productGetRequestDto.getWarrantyIds().isEmpty()){
+            List<Warranty> warranties = warrantyRepository.findAll();
+            productGetRequestDto.setWarrantyIds(warranties.stream().map(Warranty::getId).toList());
+        }
         Page<Product> productsPage = productRepository.findAllByFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqualAndVendorProfileVendorId(
                 productGetRequestDto.isFreeDelivery()?List.of(true):List.of(true,false),
                 productGetRequestDto.isCod()?List.of(true):List.of(true,false),
