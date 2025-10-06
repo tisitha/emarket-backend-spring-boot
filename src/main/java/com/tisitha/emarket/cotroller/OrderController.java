@@ -34,12 +34,12 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/order/vendor")
+    @PostMapping("/order/vendor")
     public  ResponseEntity<OrderPageSortDto> getOrdersByVendor(@Valid @RequestBody OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
         return new ResponseEntity<>(orderService.getOrdersByVendor(orderGetRequestDto,authentication),HttpStatus.OK);
     }
 
-    @GetMapping("/order/user")
+    @PostMapping("/order/user")
     public ResponseEntity<OrderPageSortDto> getOrdersByUser(@Valid @RequestBody OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
         return new ResponseEntity<>(orderService.getOrdersByUser(orderGetRequestDto,authentication),HttpStatus.OK);
     }

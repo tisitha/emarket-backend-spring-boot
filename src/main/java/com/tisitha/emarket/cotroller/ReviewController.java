@@ -21,7 +21,7 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @GetMapping("/open/review")
+    @PostMapping("/open/review")
     public ResponseEntity<ReviewPageSortDto> getReviewTitles(@Valid @RequestBody ReviewGetRequestDto reviewGetRequestDto) {
         return new ResponseEntity<>(reviewService.getReviewTitles(reviewGetRequestDto), HttpStatus.OK);
     }

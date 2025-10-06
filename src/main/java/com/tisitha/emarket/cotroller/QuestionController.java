@@ -18,12 +18,12 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    @GetMapping("/open/question")
+    @PostMapping("/open/question")
     public ResponseEntity<QuestionPageSortDto> getAnsweredQuestions(@Valid @RequestBody QuestionGetRequestDto questionGetRequestDto){
         return new ResponseEntity<>(questionService.getAnsweredQuestionTitles(questionGetRequestDto), HttpStatus.OK);
     }
 
-    @GetMapping("/question/vendor")
+    @PostMapping("/question/vendor")
     public ResponseEntity<QuestionPageSortDto> getUnansweredQuestions(@Valid @RequestBody QuestionGetRequestDto questionGetRequestDto, Authentication authentication){
         return new ResponseEntity<>(questionService.getUnansweredQuestionTitles(questionGetRequestDto,authentication), HttpStatus.OK);
     }

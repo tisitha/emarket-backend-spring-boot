@@ -19,7 +19,7 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @GetMapping("/product")
+    @PostMapping("/product")
     ResponseEntity<ProductPageSortDto> getProducts(@Valid @RequestBody AdminPanelGetDto adminPanelGetDto){
         return new ResponseEntity<>(adminService.getProducts(adminPanelGetDto), HttpStatus.OK);
     }
@@ -30,7 +30,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/account")
+    @PostMapping("/account")
     ResponseEntity<AccountPageSortDto> getAccounts(@Valid @RequestBody AdminPanelGetDto adminPanelGetDto){
         return new ResponseEntity<>(adminService.getAccounts(adminPanelGetDto),HttpStatus.OK);
     }
@@ -51,7 +51,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/review")
+    @PostMapping("/review")
     ResponseEntity<ReviewPageSortDto> getReviews(@Valid @RequestBody AdminPanelGetDto adminPanelGetDto){
         return new ResponseEntity<>(adminService.getReviews(adminPanelGetDto),HttpStatus.OK);
     }
@@ -67,7 +67,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/question")
+    @PostMapping("/question")
     ResponseEntity<QuestionPageSortDto> getQuestions(@Valid @RequestBody AdminPanelGetDto adminPanelGetDto){
         return new ResponseEntity<>(adminService.getQuestions(adminPanelGetDto),HttpStatus.OK);
     }

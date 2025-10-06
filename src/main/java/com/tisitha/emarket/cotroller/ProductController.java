@@ -33,7 +33,7 @@ public class ProductController {
         this.objectMapper = objectMapper;
     }
 
-    @GetMapping("/open/product")
+    @PostMapping("/open/product")
     public ResponseEntity<ProductPageSortDto> getProducts(@Valid @RequestBody ProductGetRequestDto productGetRequestDto){
         return new ResponseEntity<>(productService.getProducts(productGetRequestDto), HttpStatus.OK);
     }
@@ -43,7 +43,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.getDealProducts(size),HttpStatus.OK);
     }
 
-    @GetMapping("/product/vendor/{vendorId}")
+    @PostMapping("/product/vendor/{vendorId}")
     public ResponseEntity<ProductPageSortDto> getProductsByVendor(@PathVariable UUID vendorId,@Valid  @RequestBody ProductGetRequestDto productGetRequestDto){
         return new ResponseEntity<>(productService.getProductsByVendor(vendorId,productGetRequestDto), HttpStatus.OK);
     }
