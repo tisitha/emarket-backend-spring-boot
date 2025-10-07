@@ -36,9 +36,9 @@ public class ProductGetRequestDto {
 
     private UUID vendorId;
 
-    private double minPrice;
+    private Double minPrice;
 
-    private double maxPrice;
+    private Double maxPrice;
 
     private int minQuantity;
 

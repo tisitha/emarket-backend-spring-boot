@@ -59,8 +59,8 @@ public class ProductServiceImp implements ProductService{
                 productGetRequestDto.isCod()?List.of(true):List.of(true,false),
                 productGetRequestDto.getProvinceIds(),
                 productGetRequestDto.getWarrantyIds(),
-                productGetRequestDto.getMinPrice(),
-                productGetRequestDto.getMaxPrice(),
+                productGetRequestDto.getMinPrice()==null?0:productGetRequestDto.getMinPrice(),
+                productGetRequestDto.getMaxPrice()==null?Double.MAX_VALUE:productGetRequestDto.getMaxPrice(),
                 productGetRequestDto.getMinQuantity(),
                 pageable
         );
