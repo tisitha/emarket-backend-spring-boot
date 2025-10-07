@@ -61,7 +61,7 @@ public class ProductServiceImp implements ProductService{
                 productGetRequestDto.getWarrantyIds(),
                 productGetRequestDto.getMinPrice()==null?0:productGetRequestDto.getMinPrice(),
                 productGetRequestDto.getMaxPrice()==null?Double.MAX_VALUE:productGetRequestDto.getMaxPrice(),
-                productGetRequestDto.getMinQuantity(),
+                productGetRequestDto.isStockOnly()?1:0,
                 pageable
         );
         List<Product> products = productsPage.getContent();
@@ -100,7 +100,7 @@ public class ProductServiceImp implements ProductService{
                 productGetRequestDto.getWarrantyIds(),
                 productGetRequestDto.getMinPrice(),
                 productGetRequestDto.getMaxPrice(),
-                productGetRequestDto.getMinQuantity(),
+                productGetRequestDto.isStockOnly()?1:0,
                 vendorId,
                 pageable
         );

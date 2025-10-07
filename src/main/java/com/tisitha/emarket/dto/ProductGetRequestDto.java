@@ -40,6 +40,6 @@ public class ProductGetRequestDto {
 
     private Double maxPrice;
 
-    private int minQuantity;
+    private boolean stockOnly;
 
 }
