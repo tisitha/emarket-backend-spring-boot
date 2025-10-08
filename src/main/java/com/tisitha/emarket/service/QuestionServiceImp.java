@@ -9,6 +9,7 @@ import com.tisitha.emarket.repo.NotificationRepository;
 import com.tisitha.emarket.repo.ProductRepository;
 import com.tisitha.emarket.repo.QuestionRepository;
 import com.tisitha.emarket.repo.UserRepository;
+import com.tisitha.emarket.util.ObjectConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +38,7 @@ public class QuestionServiceImp implements QuestionService{
         Pageable pageable = PageRequest.of(questionGetRequestDto.getPageNumber(),questionGetRequestDto.getPageSize(),sort);
         Page<Question> questions =questionRepository.findAllByProductIdAndAnswerIsNotNull(questionGetRequestDto.getProductId(),pageable);
         return new QuestionPageSortDto(
-                questions.getContent().stream().map(this::mapQuestionToQuestionDto).toList(),
+                questions.getContent().stream().map(ObjectConverter::mapQuestionToQuestionDto).toList(),
                 questions.getTotalElements(),
                 questions.getTotalPages(),
                 questions.isLast()
@@ -50,7 +51,7 @@ public class QuestionServiceImp implements QuestionService{
         Pageable pageable = PageRequest.of(questionGetRequestDto.getPageNumber(),questionGetRequestDto.getPageSize(),sort);
         Page<Question> questions =questionRepository.findAllByProductVendorProfileUserEmailAndAnswerIsNull(authentication.getName(),pageable);
         return new QuestionPageSortDto(
-                questions.getContent().stream().map(this::mapQuestionToQuestionDto).toList(),
+                questions.getContent().stream().map(ObjectConverter::mapQuestionToQuestionDto).toList(),
                 questions.getTotalElements(),
                 questions.getTotalPages(),
                 questions.isLast()
@@ -60,7 +61,7 @@ public class QuestionServiceImp implements QuestionService{
     @Override
     public QuestionResponseDto getQuestionTitle(Long questionId) {
         Question question =questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
-        return mapQuestionToQuestionDto(question);
+        return ObjectConverter.mapQuestionToQuestionDto(question);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class QuestionServiceImp implements QuestionService{
         notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));
         notification.setMessage(product.getName()+"\n"+user.getFname()+" asked a question.");
         notificationRepository.save(notification);
-        return mapQuestionToQuestionDto(newQuestion);
+        return ObjectConverter.mapQuestionToQuestionDto(newQuestion);
     }
 
     @Override
@@ -99,7 +100,7 @@ public class QuestionServiceImp implements QuestionService{
         notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));
         notification.setMessage(question.getProduct().getName()+"\nThe vendor replied to your question.");
         notificationRepository.save(notification);
-        return mapQuestionToQuestionDto(newQuestion);
+        return ObjectConverter.mapQuestionToQuestionDto(newQuestion);
     }
 
     @Override
@@ -108,14 +109,4 @@ public class QuestionServiceImp implements QuestionService{
         questionRepository.deleteById(questionId);
     }
 
-    private QuestionResponseDto mapQuestionToQuestionDto(Question question){
-        return new QuestionResponseDto(
-                question.getId(),
-                question.getQuestion(),
-                question.getAnswer(),
-                question.getProduct(),
-                question.getUser(),
-                question.getDate()
-        );
-    }
 }

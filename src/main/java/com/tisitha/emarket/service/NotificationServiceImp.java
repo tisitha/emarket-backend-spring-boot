@@ -1,10 +1,10 @@
 package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.NotificationPageDto;
-import com.tisitha.emarket.dto.NotificationResponseDto;
 import com.tisitha.emarket.exception.NotificationNotFoundException;
 import com.tisitha.emarket.model.Notification;
 import com.tisitha.emarket.repo.NotificationRepository;
+import com.tisitha.emarket.util.ObjectConverter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +30,7 @@ public class NotificationServiceImp implements NotificationService{
         Pageable pageable = PageRequest.of(0,pageSize,sort);
         Page<Notification> notifications = notificationRepository.findByUserEmail(authentication.getName(),pageable);
         int newNotificationCount = notificationRepository.countBySeenAndUserEmail(false, authentication.getName());
-        return new NotificationPageDto(notifications.getContent().stream().map(this::mapNotificationToDto).toList(),newNotificationCount,notifications.isLast());
+        return new NotificationPageDto(notifications.getContent().stream().map(ObjectConverter::mapNotificationToDto).toList(),newNotificationCount,notifications.isLast());
     }
 
     @Override
@@ -46,14 +46,4 @@ public class NotificationServiceImp implements NotificationService{
         notificationRepository.markUnseenAsSeenOfUserEmail(authentication.getName());
     }
 
-    private NotificationResponseDto mapNotificationToDto(Notification notification){
-        return new NotificationResponseDto(
-                notification.getId(),
-                notification.getMessage(),
-                notification.getAttachedId(),
-                notification.getNotificationType(),
-                notification.isSeen(),
-                notification.getDateAndTime()
-        );
-    }
 }

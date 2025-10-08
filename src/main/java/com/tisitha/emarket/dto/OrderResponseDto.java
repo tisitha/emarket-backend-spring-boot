@@ -1,15 +1,11 @@
 package com.tisitha.emarket.dto;
 
 import com.tisitha.emarket.model.*;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -19,15 +15,15 @@ public class OrderResponseDto {
 
     private UUID id;
 
-    private User user;
+    private UserResponseDto user;
 
     private OrderStatus orderStatus;
 
-    private PaymentMethod paymentMethod;
+    private PaymentMethodResponseDto paymentMethod;
 
-    private Product product;
+    private ProductResponseDto product;
 
-    private VendorProfile vendorProfile;
+    private VendorProfileDto vendorProfile;
 
     private Date date;
 

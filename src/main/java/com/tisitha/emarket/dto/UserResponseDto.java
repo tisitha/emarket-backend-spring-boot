@@ -4,13 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class ProvinceResponseDto {
+public class UserResponseDto {
 
-    private Long id;
+    private UUID id;
 
-    private String name;
+    private String fname;
 
+    private String lname;
+
+    private String email;
 }

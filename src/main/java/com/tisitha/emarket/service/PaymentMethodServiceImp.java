@@ -5,6 +5,7 @@ import com.tisitha.emarket.dto.PaymentMethodResponseDto;
 import com.tisitha.emarket.exception.PaymentMethodNotFoundException;
 import com.tisitha.emarket.model.PaymentMethod;
 import com.tisitha.emarket.repo.PaymentMethodRepository;
+import com.tisitha.emarket.util.ObjectConverter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +22,13 @@ public class PaymentMethodServiceImp implements PaymentMethodService{
     @Override
     public List<PaymentMethodResponseDto> getPaymentMethodTitles() {
         List<PaymentMethod> warranties = paymentMethodRepository.findAll();
-        return warranties.stream().map(this::mapPaymentMethodToPaymentMethodDto).toList();
+        return warranties.stream().map(ObjectConverter::mapPaymentMethodToPaymentMethodDto).toList();
     }
 
     @Override
     public PaymentMethodResponseDto getPaymentMethodTitle(Long paymentMethodId) {
         PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId).orElseThrow(PaymentMethodNotFoundException::new);
-        return mapPaymentMethodToPaymentMethodDto(paymentMethod);
+        return ObjectConverter.mapPaymentMethodToPaymentMethodDto(paymentMethod);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class PaymentMethodServiceImp implements PaymentMethodService{
         PaymentMethod paymentMethod = new PaymentMethod();
         paymentMethod.setName(paymentMethodRequestDto.getName());
         PaymentMethod newPaymentMethod = paymentMethodRepository.save(paymentMethod);
-        return mapPaymentMethodToPaymentMethodDto(newPaymentMethod);
+        return ObjectConverter.mapPaymentMethodToPaymentMethodDto(newPaymentMethod);
     }
 
     @Override
@@ -43,17 +44,13 @@ public class PaymentMethodServiceImp implements PaymentMethodService{
         PaymentMethod oldPaymentMethod = paymentMethodRepository.findById(paymentMethodId).orElseThrow(PaymentMethodNotFoundException::new);
         oldPaymentMethod.setName(paymentMethodRequestDto.getName());
         PaymentMethod newPaymentMethod = paymentMethodRepository.save(oldPaymentMethod);
-        return mapPaymentMethodToPaymentMethodDto(newPaymentMethod);
+        return ObjectConverter.mapPaymentMethodToPaymentMethodDto(newPaymentMethod);
     }
 
     @Override
     public void deletePaymentMethodTitle(Long paymentMethodId) {
         paymentMethodRepository.findById(paymentMethodId).orElseThrow(PaymentMethodNotFoundException::new);
         paymentMethodRepository.deleteById(paymentMethodId);
-    }
-
-    private PaymentMethodResponseDto mapPaymentMethodToPaymentMethodDto(PaymentMethod paymentMethod){
-        return new PaymentMethodResponseDto(paymentMethod.getId(),paymentMethod.getName(),paymentMethod.getOrders());
     }
 
 }

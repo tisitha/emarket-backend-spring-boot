@@ -8,6 +8,7 @@ import com.tisitha.emarket.exception.ProvinceNotFoundException;
 import com.tisitha.emarket.exception.ReviewNotFoundException;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.*;
+import com.tisitha.emarket.util.ObjectConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +38,7 @@ public class ReviewServiceImp implements ReviewService{
         Pageable pageable = PageRequest.of(reviewGetRequestDto.getPageNumber(),reviewGetRequestDto.getPageSize(),sort);
         Page<Review> reviews =reviewRepository.findAllByProductId(reviewGetRequestDto.getProductId(),pageable);
         return new ReviewPageSortDto(
-                reviews.getContent().stream().map(this::mapReviewToReviewDto).toList(),
+                reviews.getContent().stream().map(ObjectConverter::mapReviewToReviewDto).toList(),
                 reviews.getNumberOfElements(),
                 reviews.getTotalPages(),
                 reviews.isLast());
@@ -46,7 +47,7 @@ public class ReviewServiceImp implements ReviewService{
     @Override
     public ReviewResponseDto getReviewTitle(Long reviewId) {
         Review review =reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
-        return mapReviewToReviewDto(review);
+        return ObjectConverter.mapReviewToReviewDto(review);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class ReviewServiceImp implements ReviewService{
         notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));
         notification.setMessage(product.getName()+"\n"+user.getFname()+" rated "+review.getRate()+".");
         notificationRepository.save(notification);
-        return mapReviewToReviewDto(newReview);
+        return ObjectConverter.mapReviewToReviewDto(newReview);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class ReviewServiceImp implements ReviewService{
         review.setRate(reviewRequestDto.getRate());
         review.setEdited(true);
         Review newReview = reviewRepository.save(review);
-        return mapReviewToReviewDto(newReview);
+        return ObjectConverter.mapReviewToReviewDto(newReview);
     }
 
     @Override
@@ -93,15 +94,4 @@ public class ReviewServiceImp implements ReviewService{
         reviewRepository.deleteById(reviewId);
     }
 
-    private ReviewResponseDto mapReviewToReviewDto(Review review){
-        return new ReviewResponseDto(
-                review.getId(),
-                review.getBody(),
-                review.getRate(),
-                review.getDate(),
-                review.getProduct(),
-                review.getUser(),
-                review.isEdited()
-        );
-    }
 }

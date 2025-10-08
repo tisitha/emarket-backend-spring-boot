@@ -1,6 +1,5 @@
 package com.tisitha.emarket.dto;
 
-import com.tisitha.emarket.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ public class ProductResponseDto {
 
     private UUID id;
 
-    private VendorProfile vendorProfile;
+    private VendorProfileDto vendorProfile;
 
     private String name;
 
@@ -33,19 +32,17 @@ public class ProductResponseDto {
 
     private String brand;
 
-    private Category category;
+    private CategoryResponseDto category;
 
-    private List<Review> reviews;
+    private List<ReviewResponseDto> reviews;
 
     private Double avgRatings;
 
-    private Province province;
+    private ProvinceResponseDto province;
 
-    private Warranty warranty;
+    private WarrantyResponseDto warranty;
 
-    private List<Question> questions;
-
-    private List<CartItem> cartItems;
+    private List<QuestionResponseDto> questions;
 
     private Integer quantity;
 

@@ -5,6 +5,7 @@ import com.tisitha.emarket.dto.CarouselResponseDto;
 import com.tisitha.emarket.exception.InvalidInputException;
 import com.tisitha.emarket.model.Carousel;
 import com.tisitha.emarket.repo.CarouselRepository;
+import com.tisitha.emarket.util.ObjectConverter;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,7 @@ public class CarouselServiceImp implements CarouselService{
     @Override
     public List<CarouselResponseDto> getCarousels() {
         List<Carousel> carousels = carouselRepository.findAll();
-        return carousels.stream().map(this::mapCarouselToCarouselDto).toList();
+        return carousels.stream().map(ObjectConverter::mapCarouselToCarouselDto).toList();
     }
 
     @Override
@@ -51,9 +52,5 @@ public class CarouselServiceImp implements CarouselService{
     public void deleteCarousel(Long carouselId) {
         carouselRepository.findById(carouselId).orElseThrow(InvalidInputException::new);
         carouselRepository.deleteById(carouselId);
-    }
-
-    private CarouselResponseDto mapCarouselToCarouselDto(Carousel carousel){
-        return new CarouselResponseDto(carousel.getId(), carousel.getName(), carousel.getImgUrl(), carousel.isHidden());
     }
 }

@@ -10,6 +10,7 @@ import com.tisitha.emarket.model.Product;
 import com.tisitha.emarket.model.User;
 import com.tisitha.emarket.repo.CartItemRepository;
 import com.tisitha.emarket.repo.ProductRepository;
+import com.tisitha.emarket.util.ObjectConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class CartItemServiceImp implements CartItemService{
     @Override
     public List<CartItemResponseDto> getCartByUser(Authentication authentication) {
         List<CartItem> cartItems = cartItemRepository.findAllByUserEmail(authentication.getName());
-        return cartItems.stream().map(this::mapCartItemToCartItemDto).toList();
+        return cartItems.stream().map(ObjectConverter::mapCartItemToCartItemDto).toList();
     }
 
     @Override
@@ -44,7 +45,7 @@ public class CartItemServiceImp implements CartItemService{
         cartItem.setQuantity(cartItemRequestDto.getQuantity());
         cartItem.setProduct(product);
         CartItem newCartItem = cartItemRepository.save(cartItem);
-        return mapCartItemToCartItemDto(newCartItem);
+        return ObjectConverter.mapCartItemToCartItemDto(newCartItem);
     }
 
     @Override
@@ -59,22 +60,13 @@ public class CartItemServiceImp implements CartItemService{
         if(newCartItem.getQuantity()==0){
             cartItemRepository.deleteById(cartItemId);
         }
-        return mapCartItemToCartItemDto(newCartItem);
+        return ObjectConverter.mapCartItemToCartItemDto(newCartItem);
     }
 
     @Override
     public void deleteCartItem(UUID cartItemId,Authentication authentication) {
-        cartItemRepository.findByIdAndUserEmail(cartItemId,authentication.getName()).orElseThrow(CartItemNotFoundException::new);
+        cartItemRepository.findByIdAndUserEmail(cartItemId, authentication.getName()).orElseThrow(CartItemNotFoundException::new);
         cartItemRepository.deleteById(cartItemId);
-    }
-
-    private CartItemResponseDto mapCartItemToCartItemDto(CartItem cartItem){
-        return new CartItemResponseDto(
-                cartItem.getId(),
-                cartItem.getUser(),
-                cartItem.getQuantity(),
-                cartItem.getProduct()
-        );
     }
 
 }

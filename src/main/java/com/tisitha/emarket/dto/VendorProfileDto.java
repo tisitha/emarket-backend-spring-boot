@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class ProvinceResponseDto {
-
-    private Long id;
-
-    private String name;
-
+public class VendorProfileDto {
+    private UUID id;
+    private String businessName;
 }

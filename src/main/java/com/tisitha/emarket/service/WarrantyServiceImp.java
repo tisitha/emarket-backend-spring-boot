@@ -5,6 +5,7 @@ import com.tisitha.emarket.dto.WarrantyResponseDto;
 import com.tisitha.emarket.exception.WarrantyNotFoundException;
 import com.tisitha.emarket.model.Warranty;
 import com.tisitha.emarket.repo.WarrantyRepository;
+import com.tisitha.emarket.util.ObjectConverter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +22,13 @@ public class WarrantyServiceImp implements WarrantyService{
     @Override
     public List<WarrantyResponseDto> getWarrantyTitles() {
         List<Warranty> warranties = warrantyRepository.findAll();
-        return warranties.stream().map(this::mapWarrantyToWarrantyDto).toList();
+        return warranties.stream().map(ObjectConverter::mapWarrantyToWarrantyDto).toList();
     }
 
     @Override
     public WarrantyResponseDto getWarrantyTitle(Long warrantyId) {
         Warranty warranty = warrantyRepository.findById(warrantyId).orElseThrow(WarrantyNotFoundException::new);
-        return mapWarrantyToWarrantyDto(warranty);
+        return ObjectConverter.mapWarrantyToWarrantyDto(warranty);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class WarrantyServiceImp implements WarrantyService{
         Warranty warranty = new Warranty();
         warranty.setName(warrantyRequestDto.getName());
         Warranty newWarranty = warrantyRepository.save(warranty);
-        return mapWarrantyToWarrantyDto(newWarranty);
+        return ObjectConverter.mapWarrantyToWarrantyDto(newWarranty);
     }
 
     @Override
@@ -43,17 +44,13 @@ public class WarrantyServiceImp implements WarrantyService{
         Warranty oldWarranty = warrantyRepository.findById(warrantyId).orElseThrow(WarrantyNotFoundException::new);
         oldWarranty.setName(warrantyRequestDto.getName());
         Warranty newWarranty = warrantyRepository.save(oldWarranty);
-        return mapWarrantyToWarrantyDto(newWarranty);
+        return ObjectConverter.mapWarrantyToWarrantyDto(newWarranty);
     }
 
     @Override
     public void deleteWarrantyTitle(Long warrantyId) {
         warrantyRepository.findById(warrantyId).orElseThrow(WarrantyNotFoundException::new);
         warrantyRepository.deleteById(warrantyId);
-    }
-
-    private WarrantyResponseDto mapWarrantyToWarrantyDto(Warranty warranty){
-        return new WarrantyResponseDto(warranty.getId(),warranty.getName(),warranty.getProducts());
     }
 
 }

@@ -7,6 +7,7 @@ import com.tisitha.emarket.dto.ProductResponseDto;
 import com.tisitha.emarket.exception.*;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.*;
+import com.tisitha.emarket.util.ObjectConverter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -66,7 +67,7 @@ public class ProductServiceImp implements ProductService{
         );
         List<Product> products = productsPage.getContent();
         return new ProductPageSortDto(
-                products.stream().map(this::mapProductToProductDto).toList(),
+                products.stream().map(ObjectConverter::mapProductToProductDto).toList(),
                 productsPage.getTotalElements(),
                 productsPage.getTotalPages(),
                 productsPage.isLast()
@@ -78,7 +79,7 @@ public class ProductServiceImp implements ProductService{
         Sort sort = Sort.by("deal").ascending();
         Pageable pageable = PageRequest.of(0,size,sort);
         Page<Product> productsPage = productRepository.findAllByDealIsNotNull(pageable);
-        return productsPage.getContent().stream().map(this::mapProductToProductDto).toList();
+        return productsPage.getContent().stream().map(ObjectConverter::mapProductToProductDto).toList();
     }
 
     @Override
@@ -106,7 +107,7 @@ public class ProductServiceImp implements ProductService{
         );
         List<Product> products = productsPage.getContent();
         return new ProductPageSortDto(
-                products.stream().map(this::mapProductToProductDto).toList(),
+                products.stream().map(ObjectConverter::mapProductToProductDto).toList(),
                 productsPage.getTotalElements(),
                 productsPage.getTotalPages(),
                 productsPage.isLast()
@@ -116,14 +117,14 @@ public class ProductServiceImp implements ProductService{
     @Override
     public ProductResponseDto getProduct(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
-        return mapProductToProductDto(product);
+        return ObjectConverter.mapProductToProductDto(product);
     }
 
     @Override
     public List<ProductResponseDto> search(String text,int size) {
         Pageable pageable = PageRequest.of(0,size);
         Page<Product> products = productRepository.findByNameContainingIgnoreCase(text,pageable);
-        return products.getContent().stream().map(this::mapProductToProductDto).toList();
+        return products.getContent().stream().map(ObjectConverter::mapProductToProductDto).toList();
     }
 
     @Override
@@ -188,29 +189,4 @@ public class ProductServiceImp implements ProductService{
         productRepository.deleteById(id);
     }
 
-    private ProductResponseDto mapProductToProductDto(Product product){
-        OptionalDouble average = product.getReviews().stream()
-                .mapToInt(Review::getRate)
-                .average();
-        return new ProductResponseDto(
-                product.getId(),
-                product.getVendorProfile(),
-                product.getName(),
-                product.getImgUrl(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getDeal(),
-                product.isCod(),
-                product.isFreeDelivery(),
-                product.getBrand(),
-                product.getCategory(),
-                product.getReviews(),
-                average.isPresent()?average.getAsDouble():null,
-                product.getProvince(),
-                product.getWarranty(),
-                product.getQuestions(),
-                product.getCartItems(),
-                product.getQuantity()
-        );
-    }
 }

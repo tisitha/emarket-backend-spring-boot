@@ -7,6 +7,7 @@ import com.tisitha.emarket.exception.PaymentMethodNotFoundException;
 import com.tisitha.emarket.exception.UnauthorizeAccessException;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.*;
+import com.tisitha.emarket.util.ObjectConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +40,7 @@ public class OrderServiceImp implements OrderService{
         if(!order.getUser().getEmail().equals(authentication.getName()) && !order.getVendorProfile().getUser().getEmail().equals(authentication.getName())){
             throw new UnauthorizeAccessException();
         }
-        return mapOrderToOrderDto(order);
+        return ObjectConverter.mapOrderToOrderDto(order);
     }
 
     @Override
@@ -88,7 +89,7 @@ public class OrderServiceImp implements OrderService{
         Sort sort = orderGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(orderGetRequestDto.getSortBy()).ascending():Sort.by(orderGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(orderGetRequestDto.getPageNumber(),orderGetRequestDto.getPageSize(),sort);
         Page<Order> orders = orderRepository.findAllByVendorProfileUserEmail(authentication.getName(),pageable);
-        return new OrderPageSortDto(orders.getContent().stream().map(this::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
+        return new OrderPageSortDto(orders.getContent().stream().map(ObjectConverter::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
     }
 
     @Override
@@ -96,7 +97,7 @@ public class OrderServiceImp implements OrderService{
         Sort sort = orderGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(orderGetRequestDto.getSortBy()).ascending():Sort.by(orderGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(orderGetRequestDto.getPageNumber(),orderGetRequestDto.getPageSize(),sort);
         Page<Order> orders = orderRepository.findAllByUserEmail(authentication.getName(),pageable);
-        return new OrderPageSortDto(orders.getContent().stream().map(this::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
+        return new OrderPageSortDto(orders.getContent().stream().map(ObjectConverter::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
     }
 
     @Override
@@ -131,7 +132,7 @@ public class OrderServiceImp implements OrderService{
         }
         order.setOrderStatus(newOrderStatus);
         Order newOrder = orderRepository.save(order);
-        return mapOrderToOrderDto(newOrder);
+        return ObjectConverter.mapOrderToOrderDto(newOrder);
     }
 
     @Override
@@ -155,7 +156,7 @@ public class OrderServiceImp implements OrderService{
         reviewPass.setProduct(newOrder.getProduct());
         reviewPass.setUser(newOrder.getUser());
         reviewPassRepository.save(reviewPass);
-        return mapOrderToOrderDto(newOrder);
+        return ObjectConverter.mapOrderToOrderDto(newOrder);
     }
 
     @Override
@@ -178,10 +179,7 @@ public class OrderServiceImp implements OrderService{
         notificationRepository.save(notification);
         order.setOrderStatus(OrderStatus.CANCELLED);
         Order newOrder = orderRepository.save(order);
-        return mapOrderToOrderDto(newOrder);
+        return ObjectConverter.mapOrderToOrderDto(newOrder);
     }
 
-    private OrderResponseDto mapOrderToOrderDto(Order order){
-        return new OrderResponseDto(order.getId(),order.getUser(),order.getOrderStatus(),order.getPaymentMethod(),order.getProduct(),order.getVendorProfile(),order.getDate(),order.getQuantity(),order.getCost(),order.getDeliveryCost(), order.getTotalCost());
-    }
 }

@@ -5,6 +5,7 @@ import com.tisitha.emarket.dto.CategoryResponseDto;
 import com.tisitha.emarket.exception.CategoryNotFoundException;
 import com.tisitha.emarket.model.Category;
 import com.tisitha.emarket.repo.CategoryRepository;
+import com.tisitha.emarket.util.ObjectConverter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +22,13 @@ public class CategoryServiceImp implements CategoryService{
     @Override
     public List<CategoryResponseDto> getCategoryTitles() {
         List<Category> warranties = categoryRepository.findAll();
-        return warranties.stream().map(this::mapCategoryToCategoryDto).toList();
+        return warranties.stream().map(ObjectConverter::mapCategoryToCategoryDto).toList();
     }
 
     @Override
     public CategoryResponseDto getCategoryTitle(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
-        return mapCategoryToCategoryDto(category);
+        return ObjectConverter.mapCategoryToCategoryDto(category);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class CategoryServiceImp implements CategoryService{
             category.setParent(parent);
         }
         Category newCategory = categoryRepository.save(category);
-        return mapCategoryToCategoryDto(newCategory);
+        return ObjectConverter.mapCategoryToCategoryDto(newCategory);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class CategoryServiceImp implements CategoryService{
             oldCategory.setParent(parent);
         }
         Category newCategory = categoryRepository.save(oldCategory);
-        return mapCategoryToCategoryDto(newCategory);
+        return ObjectConverter.mapCategoryToCategoryDto(newCategory);
     }
 
     @Override
@@ -63,17 +64,13 @@ public class CategoryServiceImp implements CategoryService{
     @Override
     public List<CategoryResponseDto> getRootCategoryTitles() {
         List<Category> categories = categoryRepository.findByParentIsNull();
-        return categories.stream().map(this::mapCategoryToCategoryDto).toList();
+        return categories.stream().map(ObjectConverter::mapCategoryToCategoryDto).toList();
     }
 
     @Override
     public List<CategoryResponseDto> getSubCategoryTitles(Long id) {
         List<Category> categories = categoryRepository.findByParentId(id);
-        return categories.stream().map(this::mapCategoryToCategoryDto).toList();
-    }
-
-    private CategoryResponseDto mapCategoryToCategoryDto(Category category){
-        return new CategoryResponseDto(category.getId(),category.getName());
+        return categories.stream().map(ObjectConverter::mapCategoryToCategoryDto).toList();
     }
 
 }
