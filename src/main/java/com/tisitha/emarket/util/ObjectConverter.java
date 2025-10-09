@@ -3,9 +3,7 @@ package com.tisitha.emarket.util;
 import com.tisitha.emarket.dto.*;
 import com.tisitha.emarket.model.*;
 
-import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.Random;
 
 public class ObjectConverter {
 
@@ -25,11 +23,9 @@ public class ObjectConverter {
                 product.isFreeDelivery(),
                 product.getBrand(),
                 mapCategoryToCategoryDto(product.getCategory()),
-                product.getReviews().stream().map(ObjectConverter::mapReviewToReviewDto).toList(),
                 average.isPresent()?average.getAsDouble():null,
                 mapProvinceToProvinceDto(product.getProvince()),
                 mapWarrantyToWarrantyDto(product.getWarranty()),
-                product.getQuestions().stream().map(ObjectConverter::mapQuestionToQuestionDto).toList(),
                 product.getQuantity()
         );
     }
@@ -43,7 +39,7 @@ public class ObjectConverter {
         accountResponseDto.setPhoneNo(user.getPhoneNo());
         accountResponseDto.setAddress(user.getAddress());
         accountResponseDto.setRole(user.getRole());
-        accountResponseDto.setProvince(user.getProvince());
+        accountResponseDto.setProvince(mapProvinceToProvinceDto(user.getProvince()));
         VendorProfile vendorProfile = user.getVendorProfile();
         if(vendorProfile==null){
             return accountResponseDto;
@@ -115,7 +111,7 @@ public class ObjectConverter {
                 question.getId(),
                 question.getQuestion(),
                 question.getAnswer(),
-                question.getProduct(),
+                mapProductToProductDto(question.getProduct()),
                 mapUserToUserDto(question.getUser()),
                 question.getDate()
         );
@@ -126,6 +122,7 @@ public class ObjectConverter {
                 review.getId(),
                 review.getBody(),
                 review.getRate(),
+                mapProductToProductDto(review.getProduct()),
                 review.getDate(),
                 mapUserToUserDto(review.getUser()),
                 review.isEdited()

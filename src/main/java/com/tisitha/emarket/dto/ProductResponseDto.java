@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -34,15 +33,11 @@ public class ProductResponseDto {
 
     private CategoryResponseDto category;
 
-    private List<ReviewResponseDto> reviews;
-
     private Double avgRatings;
 
     private ProvinceResponseDto province;
 
     private WarrantyResponseDto warranty;
-
-    private List<QuestionResponseDto> questions;
 
     private Integer quantity;
 

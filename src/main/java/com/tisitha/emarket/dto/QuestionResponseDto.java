@@ -18,7 +18,7 @@ public class QuestionResponseDto {
 
     private String answer;
 
-    private Product product;
+    private ProductResponseDto product;
 
     private UserResponseDto user;
 

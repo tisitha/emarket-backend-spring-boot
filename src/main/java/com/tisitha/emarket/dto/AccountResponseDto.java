@@ -23,7 +23,7 @@ public class AccountResponseDto {
 
     private Role role;
 
-    private Province province;
+    private ProvinceResponseDto province;
 
     private String businessName;
 

@@ -1,5 +1,6 @@
 package com.tisitha.emarket.dto;
 
+import com.tisitha.emarket.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,8 @@ public class ReviewResponseDto {
     private String body;
 
     private Integer rate;
+
+    private ProductResponseDto product;
 
     private Date date;
 
