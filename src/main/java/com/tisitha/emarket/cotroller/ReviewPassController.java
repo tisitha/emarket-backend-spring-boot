@@ -1,11 +1,13 @@
 package com.tisitha.emarket.cotroller;
 
-import com.tisitha.emarket.dto.CheckReviewPassDto;
 import com.tisitha.emarket.service.ReviewPassService;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/reveiwpass")
@@ -17,9 +19,9 @@ public class ReviewPassController {
         this.reviewPassService = reviewPassService;
     }
 
-    @PostMapping("/check")
-    public ResponseEntity<Boolean> checkReviewPass(@Valid @RequestBody CheckReviewPassDto checkReviewPassDto){
-        return new ResponseEntity<>(reviewPassService.checkReviewPass(checkReviewPassDto), HttpStatus.OK);
+    @GetMapping("/check/{productId}")
+    public ResponseEntity<Boolean> checkReviewPass(@NotNull @PathVariable UUID productId, Authentication authentication){
+        return new ResponseEntity<>(reviewPassService.checkReviewPass(productId,authentication), HttpStatus.OK);
     }
 
 

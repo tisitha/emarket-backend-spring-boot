@@ -9,10 +9,6 @@ import java.util.UUID;
 @Repository
 public interface ReviewPassRepository extends JpaRepository<ReviewPass, UUID> {
 
-    Boolean existsByUserIdAndProductId(UUID userId, UUID productId);
-
-    void deleteByUserIdAndProductId(UUID userId, UUID productId);
-
     Boolean existsByProductIdAndUserEmail(UUID productId, String email);
 
     void deleteByUserEmailAndProductId(String email, UUID productId);

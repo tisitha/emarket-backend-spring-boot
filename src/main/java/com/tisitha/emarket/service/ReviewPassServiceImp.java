@@ -1,8 +1,10 @@
 package com.tisitha.emarket.service;
 
-import com.tisitha.emarket.dto.CheckReviewPassDto;
 import com.tisitha.emarket.repo.ReviewPassRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class ReviewPassServiceImp implements  ReviewPassService{
@@ -14,7 +16,7 @@ public class ReviewPassServiceImp implements  ReviewPassService{
     }
 
     @Override
-    public Boolean checkReviewPass(CheckReviewPassDto checkReviewPassDto) {
-        return reviewPassRepository.existsByUserIdAndProductId(checkReviewPassDto.getUserId(),checkReviewPassDto.getProductId());
+    public Boolean checkReviewPass(UUID productId, Authentication authentication) {
+        return reviewPassRepository.existsByProductIdAndUserEmail(productId,authentication.getName());
     }
 }
