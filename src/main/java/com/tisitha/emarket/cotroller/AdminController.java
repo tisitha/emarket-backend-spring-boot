@@ -83,4 +83,14 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/deliverycost")
+    ResponseEntity<Double> getDeliveryCost(){
+        return new ResponseEntity<>(adminService.getDeliveryCost(),HttpStatus.OK);
+    }
+
+    @PostMapping("/deliverycost/{cost}")
+    ResponseEntity<Double> changeDeliveryCost(@PathVariable Double cost){
+        return new ResponseEntity<>(adminService.changeDeliveryCost(cost),HttpStatus.OK);
+    }
+
 }

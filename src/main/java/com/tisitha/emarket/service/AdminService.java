@@ -29,4 +29,8 @@ public interface AdminService {
     QuestionResponseDto getQuestion(Long questionId);
 
     void deleteQuestion(Long questionId);
+
+    Double getDeliveryCost();
+
+    Double changeDeliveryCost(Double cost);
 }

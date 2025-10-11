@@ -33,6 +33,7 @@ public class OrderServiceImp implements OrderService{
     private final PaymentMethodRepository paymentMethodRepository;
     private final ProductRepository productRepository;
     private final NotificationRepository notificationRepository;
+    private final SiteConfigRepository siteConfigRepository;
 
     @Override
     public OrderResponseDto getOrder(UUID orderId, Authentication authentication) {
@@ -76,7 +77,7 @@ public class OrderServiceImp implements OrderService{
             order.setDate(new Date());
             double cost = cartItem.getProduct().getDeal()==0?cartItem.getProduct().getPrice()*cartItem.getQuantity():cartItem.getProduct().getDeal()*cartItem.getQuantity();
             order.setCost(cost);
-            double deliveryCost = cartItem.getProduct().isFreeDelivery()?0.0:250.0;
+            double deliveryCost = cartItem.getProduct().isFreeDelivery()?0.0:Double.parseDouble(siteConfigRepository.findByName(SiteConfigName.DELIVERY_COST.name()).get().getValue());
             order.setDeliveryCost(deliveryCost);
             order.setTotalCost(cost+deliveryCost);
             orderRepository.save(order);

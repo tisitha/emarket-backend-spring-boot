@@ -21,11 +21,11 @@ public class AdminServiceImp implements AdminService{
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
-    private final VendorProfileRepository vendorProfileRepository;
     private final QuestionRepository questionRepository;
     private final ReviewRepository reviewRepository;
     private final ProvinceRepository provinceRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SiteConfigRepository siteConfigRepository;
 
     @Override
     public ProductPageSortDto getProducts(AdminPanelGetDto adminPanelGetDto) {
@@ -141,5 +141,19 @@ public class AdminServiceImp implements AdminService{
     public void deleteQuestion(Long questionId) {
         questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
         questionRepository.deleteById(questionId);
+    }
+
+    @Override
+    public Double getDeliveryCost() {
+        SiteConfig deliveryCostConfig = siteConfigRepository.findByName(SiteConfigName.DELIVERY_COST.name()).get();
+        return Double.parseDouble(deliveryCostConfig.getValue());
+    }
+
+    @Override
+    public Double changeDeliveryCost(Double cost) {
+        SiteConfig deliveryCostConfig = siteConfigRepository.findByName(SiteConfigName.DELIVERY_COST.name()).get();
+        deliveryCostConfig.setValue(String.valueOf(cost));
+        SiteConfig newDeliveryCostConfig = siteConfigRepository.save(deliveryCostConfig);
+        return Double.parseDouble(newDeliveryCostConfig.getValue());
     }
 }
