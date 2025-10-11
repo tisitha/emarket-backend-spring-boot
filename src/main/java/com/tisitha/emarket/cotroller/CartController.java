@@ -2,6 +2,7 @@ package com.tisitha.emarket.cotroller;
 
 import com.tisitha.emarket.dto.CartItemRequestDto;
 import com.tisitha.emarket.dto.CartItemResponseDto;
+import com.tisitha.emarket.dto.CartResponseDto;
 import com.tisitha.emarket.service.CartItemService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,7 +28,7 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CartItemResponseDto>> getCart(Authentication authentication){
+    public ResponseEntity<CartResponseDto> getCart(Authentication authentication){
         return new ResponseEntity<>(cartItemService.getCartByUser(authentication),HttpStatus.OK);
     }
 

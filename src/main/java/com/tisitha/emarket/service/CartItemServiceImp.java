@@ -2,14 +2,17 @@ package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.CartItemRequestDto;
 import com.tisitha.emarket.dto.CartItemResponseDto;
+import com.tisitha.emarket.dto.CartResponseDto;
 import com.tisitha.emarket.exception.CartItemNotFoundException;
 import com.tisitha.emarket.exception.ProductNotFoundException;
 import com.tisitha.emarket.exception.ProductOutOfStockException;
 import com.tisitha.emarket.model.CartItem;
 import com.tisitha.emarket.model.Product;
+import com.tisitha.emarket.model.SiteConfigName;
 import com.tisitha.emarket.model.User;
 import com.tisitha.emarket.repo.CartItemRepository;
 import com.tisitha.emarket.repo.ProductRepository;
+import com.tisitha.emarket.repo.SiteConfigRepository;
 import com.tisitha.emarket.util.ObjectConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -22,16 +25,29 @@ public class CartItemServiceImp implements CartItemService{
 
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    private final SiteConfigRepository siteConfigRepository;
 
-    public CartItemServiceImp(CartItemRepository cartItemRepository, ProductRepository productRepository) {
+    public CartItemServiceImp(CartItemRepository cartItemRepository, ProductRepository productRepository, SiteConfigRepository siteConfigRepository) {
         this.cartItemRepository = cartItemRepository;
         this.productRepository = productRepository;
+        this.siteConfigRepository = siteConfigRepository;
     }
 
     @Override
-    public List<CartItemResponseDto> getCartByUser(Authentication authentication) {
+    public CartResponseDto getCartByUser(Authentication authentication) {
         List<CartItem> cartItems = cartItemRepository.findAllByUserEmail(authentication.getName());
-        return cartItems.stream().map(ObjectConverter::mapCartItemToCartItemDto).toList();
+        double totalSubCost = 0;
+        double totalDeliveryCost = 0;
+        for(CartItem cartItem:cartItems){
+            totalSubCost+=cartItem.getProduct().getDeal()==0?cartItem.getProduct().getPrice():cartItem.getProduct().getDeal();;
+            totalDeliveryCost+=cartItem.getProduct().isFreeDelivery()?0.0:Double.parseDouble(siteConfigRepository.findByName(SiteConfigName.DELIVERY_COST.name()).get().getValue());
+        }
+        return new CartResponseDto(
+                cartItems.stream().map(ObjectConverter::mapCartItemToCartItemDto).toList(),
+                totalSubCost,
+                totalDeliveryCost,
+                totalSubCost+totalDeliveryCost
+                );
     }
 
     @Override
