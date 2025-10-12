@@ -58,7 +58,7 @@ public class CartItemServiceImp implements CartItemService{
         }
         CartItem cartItem = cartItemRepository.findByProductIdAndUserEmail(product.getId(),authentication.getName()).orElse(new CartItem());
         cartItem.setUser((User)authentication.getPrincipal());
-        cartItem.setQuantity(cartItem.getQuantity()+cartItemRequestDto.getQuantity());
+        cartItem.setQuantity((cartItem.getQuantity()==null?0:cartItem.getQuantity())+cartItemRequestDto.getQuantity());
         cartItem.setProduct(product);
         CartItem newCartItem = cartItemRepository.save(cartItem);
         return ObjectConverter.mapCartItemToCartItemDto(newCartItem);
