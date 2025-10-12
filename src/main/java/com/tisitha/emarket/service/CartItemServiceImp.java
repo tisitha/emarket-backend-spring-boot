@@ -65,17 +65,19 @@ public class CartItemServiceImp implements CartItemService{
     }
 
     @Override
-    public CartItemResponseDto updateCartItem(UUID cartItemId, CartItemRequestDto cartItemRequestDto,Authentication authentication) {
-        Product product = productRepository.findById(cartItemRequestDto.getProductId()).orElseThrow(ProductNotFoundException::new);
-        if(cartItemRequestDto.getQuantity()==0 || cartItemRequestDto.getQuantity()> product.getQuantity()){
+    public CartItemResponseDto updateCartItem(UUID cartItemId, Integer newQuantity,Authentication authentication) {
+        CartItem cartItem = cartItemRepository.findByIdAndUserEmail(cartItemId,authentication.getName()).orElseThrow(CartItemNotFoundException::new);
+        Product product = cartItem.getProduct();
+        if(product==null){
+            cartItemRepository.deleteById(cartItemId);
+            throw new ProductNotFoundException();
+        }
+        if(newQuantity==0 || newQuantity> product.getQuantity()){
+            cartItemRepository.deleteById(cartItemId);
             throw new ProductOutOfStockException();
         }
-        CartItem cartItem = cartItemRepository.findByIdAndUserEmail(cartItemId,authentication.getName()).orElseThrow(CartItemNotFoundException::new);
-        cartItem.setQuantity(cartItemRequestDto.getQuantity());
+        cartItem.setQuantity(newQuantity);
         CartItem newCartItem = cartItemRepository.save(cartItem);
-        if(newCartItem.getQuantity()==0){
-            cartItemRepository.deleteById(cartItemId);
-        }
         return ObjectConverter.mapCartItemToCartItemDto(newCartItem);
     }
 

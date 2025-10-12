@@ -14,7 +14,7 @@ public interface CartItemService {
 
     CartItemResponseDto addCartItem(CartItemRequestDto cartItemRequestDto,Authentication authentication);
 
-    CartItemResponseDto updateCartItem(UUID cartItemId,CartItemRequestDto cartItemRequestDto,Authentication authentication);
+    CartItemResponseDto updateCartItem(UUID cartItemId, Integer newQuantity,Authentication authentication);
 
     void deleteCartItem(UUID cartItemId,Authentication authentication);
 
