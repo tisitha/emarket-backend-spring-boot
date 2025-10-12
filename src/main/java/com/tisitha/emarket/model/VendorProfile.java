@@ -32,7 +32,7 @@ public class VendorProfile {
     @Column(nullable = false)
     private String bank;
 
-    @OneToMany(mappedBy = "vendorProfile")
+    @OneToMany(mappedBy = "vendorProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Product> products;
 
