@@ -68,10 +68,6 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private List<Order> order;
-
-    @OneToMany(mappedBy = "user")
-    @JsonIgnore
     private List<ReviewPass> reviewPass;
 
     @OneToMany(mappedBy = "user")

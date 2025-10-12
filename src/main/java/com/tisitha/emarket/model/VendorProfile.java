@@ -36,8 +36,4 @@ public class VendorProfile {
     @JsonIgnore
     private List<Product> products;
 
-    @OneToMany(mappedBy = "vendorProfile")
-    @JsonIgnore
-    private List<Order> orders;
-
 }
