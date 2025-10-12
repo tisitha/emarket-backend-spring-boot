@@ -22,13 +22,15 @@ public class UserController {
     }
 
     @PostMapping("/auth/register-user")
-    public void registerUserAccount(@Valid @RequestBody UserRegisterDto userRegisterDto){
+    public ResponseEntity<Void> registerUserAccount(@Valid @RequestBody UserRegisterDto userRegisterDto){
         userService.registerUserAccount(userRegisterDto);
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/auth/register-vendor")
-    public void registerVendorAccount(@Valid @RequestBody VendorRegisterDto vendorRegisterDto){
+    public ResponseEntity<Void> registerVendorAccount(@Valid @RequestBody VendorRegisterDto vendorRegisterDto){
         userService.registerVendorAccount(vendorRegisterDto);
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/auth/login")
@@ -39,43 +41,43 @@ public class UserController {
     @PostMapping("/auth/verifymail/{email}")
     public ResponseEntity<Void> verifyEmail(@PathVariable String email){
         forgotPasswordService.verifyEmail(email);
-        return ResponseEntity.ok().build();
-
+        return ResponseEntity.accepted().build();
     }
+
     @PostMapping("/auth/varifyotp/{otp}/{email}")
     public ResponseEntity<Void> verifyOtp(@PathVariable Integer otp,@PathVariable String email){
         forgotPasswordService.verifyOtp(otp,email);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.accepted().build();
     }
 
-    @PostMapping("/auth/changepassword/{otp}/{email}")
+    @PatchMapping("/auth/changepassword/{otp}/{email}")
     public ResponseEntity<Void> changePasswordHandler(@Valid @RequestBody ChangePasswordDto changePasswordDto, @PathVariable Integer otp, @PathVariable String email){
         forgotPasswordService.changePasswordHandler(changePasswordDto,otp,email);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/user/user-update")
-    public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO, Authentication authentication) {
+    @PatchMapping("/user/user-update")
+    public ResponseEntity<Void> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO, Authentication authentication) {
         userService.updateUser(userUpdateDTO,authentication);
-        return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/user/vendor-update")
-    public ResponseEntity<String> updateVendor(@Valid @RequestBody VendorUpdateDto vendorUpdateDto, Authentication authentication) {
+    @PatchMapping("/user/vendor-update")
+    public ResponseEntity<Void> updateVendor(@Valid @RequestBody VendorUpdateDto vendorUpdateDto, Authentication authentication) {
         userService.updateVendor(vendorUpdateDto,authentication);
-        return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/user/usertovendor-update")
-    public ResponseEntity<String> updateUserToVendor(@Valid @RequestBody UserToVendorUpdateDto userToVendorUpdateDto, Authentication authentication) {
+    @PatchMapping("/user/usertovendor-update")
+    public ResponseEntity<Void> updateUserToVendor(@Valid @RequestBody UserToVendorUpdateDto userToVendorUpdateDto, Authentication authentication) {
         userService.userUpdateToVendor(userToVendorUpdateDto,authentication);
-        return new ResponseEntity<>("successfully account updated",HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/user/user-delete")
-    public ResponseEntity<String> deleteUser(@Valid @RequestBody PasswordDTO pass, Authentication authentication) {
+    public ResponseEntity<Void> deleteUser(@Valid @RequestBody PasswordDTO pass, Authentication authentication) {
         userService.deleteUser(pass,authentication);
-        return new ResponseEntity<>("successfully account deleted",HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -32,13 +32,13 @@ public class PaymentMethodController {
 
     @PutMapping("/admin/paymentmethod/{id}")
     public ResponseEntity<PaymentMethodResponseDto> editPaymentMethod(@PathVariable Long pmId,@Valid @RequestBody PaymentMethodRequestDto paymentMethodRequestDto){
-        return new ResponseEntity<>(paymentMethodService.updatePaymentMethodTitle(pmId,paymentMethodRequestDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(paymentMethodService.updatePaymentMethodTitle(pmId,paymentMethodRequestDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/paymentmethod/{id}")
     public ResponseEntity<Void> deletePaymentMethod(@PathVariable Long pmId){
         paymentMethodService.deletePaymentMethodTitle(pmId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

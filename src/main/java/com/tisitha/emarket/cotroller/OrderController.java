@@ -31,7 +31,7 @@ public class OrderController {
     @PostMapping("/order")
     public ResponseEntity<Void> addOrder(@Valid @RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
         orderService.addOrder(orderRequestDto,authentication);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/order/vendor")
@@ -44,19 +44,19 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getOrdersByUser(orderGetRequestDto,authentication),HttpStatus.OK);
     }
 
-    @PutMapping("/order/update/{orderId}")
+    @PatchMapping("/order/update/{orderId}")
     public ResponseEntity<OrderResponseDto> ChangeOrderStatus(@PathVariable UUID orderId, Authentication authentication) {
-        return new ResponseEntity<>(orderService.changeOrderStatus(orderId,authentication),HttpStatus.CREATED);
+        return new ResponseEntity<>(orderService.changeOrderStatus(orderId,authentication),HttpStatus.OK);
     }
 
-    @PutMapping("/admin/order/deliver/{orderId}")
+    @PatchMapping("/admin/order/deliver/{orderId}")
     public  ResponseEntity<OrderResponseDto> deliveredOrder(@PathVariable UUID orderId) {
-        return new ResponseEntity<>(orderService.deliveredOrder(orderId),HttpStatus.CREATED);
+        return new ResponseEntity<>(orderService.deliveredOrder(orderId),HttpStatus.OK);
     }
 
-    @PutMapping("/order/cancel/{orderId}")
+    @PatchMapping("/order/cancel/{orderId}")
     public  ResponseEntity<OrderResponseDto> cancelOrder(@PathVariable UUID orderId, Authentication authentication) {
-        return new ResponseEntity<>(orderService.cancelOrder(orderId,authentication),HttpStatus.CREATED);
+        return new ResponseEntity<>(orderService.cancelOrder(orderId,authentication),HttpStatus.OK);
     }
 
 }

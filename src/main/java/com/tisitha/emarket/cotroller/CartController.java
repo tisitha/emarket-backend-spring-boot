@@ -32,7 +32,7 @@ public class CartController {
         return new ResponseEntity<>(cartItemService.getCartByUser(authentication),HttpStatus.OK);
     }
 
-    @PutMapping("/{cartItemId}/{newQuantity}")
+    @PatchMapping("/{cartItemId}/{newQuantity}")
     public ResponseEntity<CartItemResponseDto> updateCart(@PathVariable UUID cartItemId,@PathVariable Integer newQuantity, Authentication authentication){
         return new ResponseEntity<>(cartItemService.updateCartItem(cartItemId,newQuantity,authentication),HttpStatus.OK);
     }
@@ -40,7 +40,7 @@ public class CartController {
     @DeleteMapping("/{cartItemId}")
     public ResponseEntity<Void> deleteCartItem(@PathVariable UUID cartItemId, Authentication authentication){
         cartItemService.deleteCartItem(cartItemId,authentication);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

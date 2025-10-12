@@ -33,13 +33,13 @@ public class ReviewController {
 
     @PutMapping("/review/{reviewId}")
     public ResponseEntity<ReviewResponseDto> updateReviewTitle(@PathVariable Long reviewId,@Valid @RequestBody ReviewRequestDto reviewRequestDto, Authentication authentication) {
-        return new ResponseEntity<>(reviewService.updateReviewTitle(reviewId,reviewRequestDto,authentication),HttpStatus.CREATED);
+        return new ResponseEntity<>(reviewService.updateReviewTitle(reviewId,reviewRequestDto,authentication),HttpStatus.OK);
     }
 
     @DeleteMapping("/review/{reviewId}")
     public ResponseEntity<Void> deleteReviewTitle(@PathVariable Long reviewId, Authentication authentication) {
         reviewService.deleteReviewTitle(reviewId,authentication);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -35,13 +35,13 @@ public class QuestionController {
 
     @PutMapping("/question/answer")
     public ResponseEntity<QuestionResponseDto> updateQuestion(@Valid @RequestBody AnswerRequestDto answerRequestDto, Authentication authentication) {
-        return new ResponseEntity<>(questionService.updateQuestionTitle(answerRequestDto,authentication),HttpStatus.CREATED);
+        return new ResponseEntity<>(questionService.updateQuestionTitle(answerRequestDto,authentication),HttpStatus.OK);
     }
 
     @DeleteMapping("/question/{questionId}")
     public ResponseEntity<Void> deleteQuestion(@PathVariable Long questionId,Authentication authentication) {
         questionService.deleteQuestionTitle(questionId,authentication);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

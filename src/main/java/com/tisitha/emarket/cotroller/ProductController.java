@@ -61,19 +61,19 @@ public class ProductController {
     @PostMapping("/product")
     public ResponseEntity<Void> addProducts(@RequestPart String productRequestDto,@RequestPart MultipartFile file, Authentication authentication){
         productService.addProduct(stringToProductRequestDto(productRequestDto),file,authentication);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/product/{productId}")
     public ResponseEntity<Void> updateProducts(@PathVariable UUID productId,@RequestPart String productRequestDto,@RequestPart MultipartFile file,Authentication authentication){
         productService.updateProduct(productId,stringToProductRequestDto(productRequestDto),file,authentication);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<Void> deleteProducts(@PathVariable UUID productId,Authentication authentication){
         productService.deleteProduct(productId,authentication);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private ProductRequestDto stringToProductRequestDto(String dataString){

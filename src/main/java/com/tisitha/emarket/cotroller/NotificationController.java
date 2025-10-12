@@ -24,15 +24,15 @@ public class NotificationController {
         return new ResponseEntity<>(notificationService.getNotificationOfUser(pageSize,authentication), HttpStatus.OK);
     }
 
-    @PutMapping("/mark/{notificationId}")
+    @PatchMapping("/mark/{notificationId}")
     public ResponseEntity<Void> markAsSeen(@PathVariable UUID notificationId,Authentication authentication) {
         notificationService.markAsSeen(notificationId,authentication);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/mark/all")
+    @PatchMapping("/mark/all")
     public ResponseEntity<Void> markAllUnseenAsSeenOfUser(Authentication authentication) {
         notificationService.markAllUnseenAsSeenOfUser(authentication);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

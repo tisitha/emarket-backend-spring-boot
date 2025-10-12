@@ -27,7 +27,7 @@ public class AdminController {
     @DeleteMapping("/product/{productId}")
     ResponseEntity<Void> deleteProduct(@PathVariable UUID productId){
         adminService.deleteProduct(productId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/accounts")
@@ -48,7 +48,7 @@ public class AdminController {
     @DeleteMapping("/account/{accountId}")
     ResponseEntity<Void> deleteAccount(@PathVariable UUID accountId){
         adminService.deleteAccount(accountId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/reviews")
@@ -64,7 +64,7 @@ public class AdminController {
     @DeleteMapping("/review/{reviewId}")
     ResponseEntity<Void> deleteReview(@PathVariable Long reviewId){
         adminService.deleteReview(reviewId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/questions")
@@ -80,7 +80,7 @@ public class AdminController {
     @DeleteMapping("/question/{questionId}")
     ResponseEntity<Void> deleteQuestion(@PathVariable Long questionId){
         adminService.deleteQuestion(questionId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/deliverycost")
@@ -88,7 +88,7 @@ public class AdminController {
         return new ResponseEntity<>(adminService.getDeliveryCost(),HttpStatus.OK);
     }
 
-    @PostMapping("/deliverycost/{cost}")
+    @PatchMapping("/deliverycost/{cost}")
     ResponseEntity<Double> changeDeliveryCost(@PathVariable Double cost){
         return new ResponseEntity<>(adminService.changeDeliveryCost(cost),HttpStatus.OK);
     }

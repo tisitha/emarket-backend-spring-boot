@@ -37,16 +37,16 @@ public class CarouselController {
         return new ResponseEntity<>( HttpStatus.CREATED);
     }
 
-    @PutMapping("/admin/carousel/{carouselId}")
+    @PatchMapping("/admin/carousel/{carouselId}")
     ResponseEntity<Void> updateCarousel(@PathVariable Long carouselId,@RequestBody CarouselRequestDto carouselRequestDto){
         carouselService.updateCarousel(carouselId,carouselRequestDto);
-        return new ResponseEntity<>( HttpStatus.CREATED);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/admin/carousel/{carouselId}")
     ResponseEntity<Void> deleteCarousel(@PathVariable Long carouselId){
         carouselService.deleteCarousel(carouselId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private CarouselRequestDto stringToCarouselRequestDto(String dataString){

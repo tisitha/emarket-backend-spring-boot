@@ -32,13 +32,13 @@ public class ProvinceController {
 
     @PutMapping("admin/province/{id}")
     public ResponseEntity<ProvinceResponseDto> editProvince(@PathVariable Long provinceId,@Valid @RequestBody ProvinceRequestDto provinceRequestDto){
-        return new ResponseEntity<>(provinceService.updateProvinceTitle(provinceId,provinceRequestDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(provinceService.updateProvinceTitle(provinceId,provinceRequestDto), HttpStatus.OK);
     }
 
     @DeleteMapping("admin/province/{id}")
     public ResponseEntity<Void> deleteProvince(@PathVariable Long provinceId){
         provinceService.deleteProvinceTitle(provinceId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

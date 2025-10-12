@@ -32,13 +32,13 @@ public class WarrantyController {
 
     @PutMapping("/admin/warranty/{id}")
     public ResponseEntity<WarrantyResponseDto> editWarrantyType(@PathVariable Long warrantyId,@Valid @RequestBody WarrantyRequestDto warrantyRequestDto){
-        return new ResponseEntity<>(warrantyService.updateWarrantyTitle(warrantyId,warrantyRequestDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(warrantyService.updateWarrantyTitle(warrantyId,warrantyRequestDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/warranty/{id}")
     public ResponseEntity<Void> deleteWarrantyType(@PathVariable Long warrantyId){
         warrantyService.deleteWarrantyTitle(warrantyId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }
