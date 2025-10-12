@@ -3,8 +3,6 @@ package com.tisitha.emarket.service;
 import com.tisitha.emarket.dto.*;
 import org.springframework.security.core.Authentication;
 
-import java.util.UUID;
-
 public interface UserService {
 
     AccountResponseDto getUser(Authentication authentication);
@@ -21,7 +19,9 @@ public interface UserService {
 
     void userUpdateToVendor(UserToVendorUpdateDto userToVendorUpdateDto, Authentication authentication);
 
+    void vendorUpdateToUser(PasswordDTO passwordDTO, Authentication authentication);
+
     void updatePassword(NewPasswordRequestDto newPasswordRequestDto, Authentication authentication);
 
-    void deleteUser(PasswordDTO pass, Authentication authentication);
+    void deleteUser(PasswordDTO passwordDTO, Authentication authentication);
 }

@@ -146,6 +146,7 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
+    @Transactional
     public void userUpdateToVendor(UserToVendorUpdateDto userToVendorUpdateDto, Authentication authentication) {
         if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),userToVendorUpdateDto.getCurrentPassword())).isAuthenticated()){
             throw new UnauthorizeAccessException();
@@ -166,6 +167,18 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
+    @Transactional
+    public void vendorUpdateToUser(PasswordDTO passwordDTO, Authentication authentication) {
+        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),passwordDTO.password())).isAuthenticated()){
+            throw new UnauthorizeAccessException();
+        }
+        User user = (User) authentication.getPrincipal();
+        user.setRole(Role.ROLE_USER);
+        userRepository.save(user);
+        vendorProfileRepository.deleteById(user.getId());
+    }
+
+    @Override
     public void updatePassword(NewPasswordRequestDto newPasswordRequestDto, Authentication authentication) {
         if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),newPasswordRequestDto.getCurrentPassword())).isAuthenticated()){
             throw new UnauthorizeAccessException();
@@ -179,8 +192,8 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public void deleteUser(PasswordDTO pass, Authentication authentication) {
-        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),pass.password())).isAuthenticated()){
+    public void deleteUser(PasswordDTO passwordDTO, Authentication authentication) {
+        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),passwordDTO.password())).isAuthenticated()){
             throw new UnauthorizeAccessException();
         }
         User user = (User) authentication.getPrincipal();
