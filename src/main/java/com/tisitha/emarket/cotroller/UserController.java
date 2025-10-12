@@ -79,6 +79,12 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/user/password")
+    public ResponseEntity<Void> updatePassword(@RequestBody NewPasswordRequestDto newPasswordRequestDto, Authentication authentication){
+        userService.updatePassword(newPasswordRequestDto, authentication);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/user/user-delete")
     public ResponseEntity<Void> deleteUser(@Valid @RequestBody PasswordDTO pass, Authentication authentication) {
         userService.deleteUser(pass,authentication);

@@ -28,7 +28,6 @@ public class UserServiceImp implements UserService{
     private final VendorProfileRepository vendorProfileRepository;
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final SupabaseService supabaseService;
 
     @Override
     public AccountResponseDto getUser(Authentication authentication) {
@@ -103,40 +102,29 @@ public class UserServiceImp implements UserService{
 
     @Override
     public void updateUser(UserUpdateDTO userUpdateDTO, Authentication authentication) {
-        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),userUpdateDTO.getCurrentPassword())).isAuthenticated()){
-            throw new UnauthorizeAccessException();
-        }
         User user = (User) authentication.getPrincipal();
-        if(userRepository.existsByEmail(userUpdateDTO.getEmail()) && !userUpdateDTO.getEmail().equals(authentication.getName()) && userUpdateDTO.getEmail() != null){
+        if(userUpdateDTO.getEmail() != null && !userUpdateDTO.getEmail().equals(authentication.getName()) && userRepository.existsByEmail(userUpdateDTO.getEmail())){
             throw new EmailTakenException();
-        }
-        if(!userUpdateDTO.getPassword().equals(userUpdateDTO.getPasswordRepeat())){
-            throw new PasswordNotMatchException();
         }
         Optional.ofNullable(userUpdateDTO.getFname()).ifPresent(user::setFname);
         Optional.ofNullable(userUpdateDTO.getLname()).ifPresent(user::setLname);
         Optional.ofNullable(userUpdateDTO.getEmail()).ifPresent(user::setEmail);
-        Optional.ofNullable(userUpdateDTO.getPassword()).ifPresent((pass)->user.setPassword(passwordEncoder.encode(pass)));
         Optional.ofNullable(userUpdateDTO.getPhoneNo()).ifPresent(user::setPhoneNo);
         Optional.ofNullable(userUpdateDTO.getAddress()).ifPresent(user::setAddress);
-        Optional<Province> province = provinceRepository.findById(userUpdateDTO.getProvinceId());
-        province.ifPresent(user::setProvince);
+        if(userUpdateDTO.getProvinceId()!=null) {
+            Optional<Province> province = provinceRepository.findById(userUpdateDTO.getProvinceId());
+            province.ifPresent(user::setProvince);
+        }
         userRepository.save(user);
     }
 
     @Override
     @Transactional
     public void updateVendor(VendorUpdateDto vendorUpdateDto, Authentication authentication) {
-        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),vendorUpdateDto.getCurrentPassword())).isAuthenticated()){
-            throw new UnauthorizeAccessException();
-        }
         User user = (User) authentication.getPrincipal();
         VendorProfile vendorProfile = vendorProfileRepository.findById(user.getId()).orElseThrow(InvalidInputException::new);
         if(userRepository.existsByEmail(vendorUpdateDto.getEmail()) && !vendorUpdateDto.getEmail().equals(authentication.getName()) && vendorUpdateDto.getEmail() != null){
             throw new EmailTakenException();
-        }
-        if(!vendorUpdateDto.getPassword().equals(vendorUpdateDto.getPasswordRepeat())){
-            throw new PasswordNotMatchException();
         }
         if (vendorUpdateDto.getEmail() != null) {
             user.setEmail(vendorUpdateDto.getEmail());
@@ -144,11 +132,12 @@ public class UserServiceImp implements UserService{
         Optional.ofNullable(vendorUpdateDto.getFname()).ifPresent(user::setFname);
         Optional.ofNullable(vendorUpdateDto.getLname()).ifPresent(user::setLname);
         Optional.ofNullable(vendorUpdateDto.getEmail()).ifPresent(user::setEmail);
-        Optional.ofNullable(vendorUpdateDto.getPassword()).ifPresent((pass)->user.setPassword(passwordEncoder.encode(pass)));
         Optional.ofNullable(vendorUpdateDto.getPhoneNo()).ifPresent(user::setPhoneNo);
         Optional.ofNullable(vendorUpdateDto.getAddress()).ifPresent(user::setAddress);
-        Optional<Province> province = provinceRepository.findById(vendorUpdateDto.getProvinceId());
-        province.ifPresent(user::setProvince);
+        if(vendorUpdateDto.getProvinceId()!=null) {
+            Optional<Province> province = provinceRepository.findById(vendorUpdateDto.getProvinceId());
+            province.ifPresent(user::setProvince);
+        }
         userRepository.save(user);
         Optional.ofNullable(vendorUpdateDto.getBusinessName()).ifPresent(vendorProfile::setBusinessName);
         Optional.ofNullable(vendorUpdateDto.getBankAccountNo()).ifPresent(vendorProfile::setBankAccountNo);
@@ -174,6 +163,19 @@ public class UserServiceImp implements UserService{
         user.setVendorProfile(vendorProfile);
         vendorProfile.setUser(userRepository.save(user));
         vendorProfileRepository.save(vendorProfile);
+    }
+
+    @Override
+    public void updatePassword(NewPasswordRequestDto newPasswordRequestDto, Authentication authentication) {
+        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),newPasswordRequestDto.getCurrentPassword())).isAuthenticated()){
+            throw new UnauthorizeAccessException();
+        }
+        User user = (User) authentication.getPrincipal();
+        if(!newPasswordRequestDto.getPassword().equals(newPasswordRequestDto.getPasswordRepeat())){
+            throw new PasswordNotMatchException();
+        }
+        user.setPassword(newPasswordRequestDto.getPassword());
+        userRepository.save(user);
     }
 
     @Override

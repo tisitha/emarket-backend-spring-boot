@@ -21,5 +21,7 @@ public interface UserService {
 
     void userUpdateToVendor(UserToVendorUpdateDto userToVendorUpdateDto, Authentication authentication);
 
+    void updatePassword(NewPasswordRequestDto newPasswordRequestDto, Authentication authentication);
+
     void deleteUser(PasswordDTO pass, Authentication authentication);
 }
