@@ -56,9 +56,9 @@ public class CartItemServiceImp implements CartItemService{
         if(cartItemRequestDto.getQuantity()==0 || cartItemRequestDto.getQuantity()> product.getQuantity()){
             throw new ProductOutOfStockException();
         }
-        CartItem cartItem = new CartItem();
+        CartItem cartItem = cartItemRepository.findByProductIdAndUserEmail(product.getId(),authentication.getName()).orElse(new CartItem());
         cartItem.setUser((User)authentication.getPrincipal());
-        cartItem.setQuantity(cartItemRequestDto.getQuantity());
+        cartItem.setQuantity(cartItem.getQuantity()+cartItemRequestDto.getQuantity());
         cartItem.setProduct(product);
         CartItem newCartItem = cartItemRepository.save(cartItem);
         return ObjectConverter.mapCartItemToCartItemDto(newCartItem);
