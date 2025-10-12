@@ -86,14 +86,17 @@ public class ObjectConverter {
 
     public static OrderResponseDto mapOrderToOrderDto(Order order){
         return new OrderResponseDto(order.getId(),
-                mapUserToUserDto(order.getUser()),
+                order.getUserId(),
                 order.getOrderStatus(),
-                mapPaymentMethodToPaymentMethodDto(order.getPaymentMethod()),
-                mapProductToProductDto(order.getProduct()),
-                mapVendorToVendorDto(order.getVendorProfile()),
+                order.getPaymentMethodName(),
+                order.getProductId(),
+                order.getProductName(),
+                order.getCost(),
+                order.getVendorId(),
+                order.getVendorName(),
                 order.getDate(),
                 order.getQuantity(),
-                order.getCost(),
+                order.getSubTotalCost(),
                 order.getDeliveryCost(),
                 order.getTotalCost());
     }

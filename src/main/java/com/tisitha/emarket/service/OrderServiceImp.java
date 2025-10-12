@@ -31,11 +31,13 @@ public class OrderServiceImp implements OrderService{
     private final ProductRepository productRepository;
     private final NotificationRepository notificationRepository;
     private final SiteConfigRepository siteConfigRepository;
+    private final UserRepository userRepository;
 
     @Override
     public OrderResponseDto getOrder(UUID orderId, Authentication authentication) {
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
-        if(!order.getUser().getEmail().equals(authentication.getName()) && !order.getVendorProfile().getUser().getEmail().equals(authentication.getName())){
+        User user = (User) authentication.getPrincipal();
+        if(!order.getUserId().equals(user.getId()) && !order.getVendorId().equals(user.getId())){
             throw new UnauthorizeAccessException();
         }
         return ObjectConverter.mapOrderToOrderDto(order);
@@ -47,10 +49,10 @@ public class OrderServiceImp implements OrderService{
         List<CartItem> cartItems = cartItemRepository.findAllByUserEmail(authentication.getName());
         for (CartItem cartItem: cartItems){
             Order order = new Order();
-            order.setUser(cartItem.getUser());
+            order.setUserId(cartItem.getUser().getId());
             order.setOrderStatus(OrderStatus.PENDING);
-            PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequestDto.getPaymentMethodId()).orElseThrow(()->new PaymentMethodNotFoundException());
-            order.setPaymentMethod(paymentMethod);
+            PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequestDto.getPaymentMethodId()).orElseThrow(PaymentMethodNotFoundException::new);
+            order.setPaymentMethodName(paymentMethod.getName());
             Product product = cartItem.getProduct();
             if(cartItem.getQuantity()==0 || cartItem.getQuantity()> product.getQuantity()){
                 cartItemRepository.deleteById(cartItem.getId());
@@ -69,14 +71,17 @@ public class OrderServiceImp implements OrderService{
             product.setQuantity(product.getQuantity()-cartItem.getQuantity());
             productRepository.save(product);
             order.setQuantity(cartItem.getQuantity());
-            order.setProduct(product);
-            order.setVendorProfile(cartItem.getProduct().getVendorProfile());
+            order.setProductId(product.getId());
+            order.setProductName(product.getName());
+            order.setCost(product.getDeal()==0?product.getPrice():product.getDeal());
+            order.setVendorId(cartItem.getProduct().getVendorProfile().getVendorId());
+            order.setVendorName(cartItem.getProduct().getVendorProfile().getBusinessName());
             order.setDate(new Date());
-            double cost = cartItem.getProduct().getDeal()==0?cartItem.getProduct().getPrice()*cartItem.getQuantity():cartItem.getProduct().getDeal()*cartItem.getQuantity();
-            order.setCost(cost);
+            double subTotalCost = cartItem.getProduct().getDeal()==0?cartItem.getProduct().getPrice()*cartItem.getQuantity():cartItem.getProduct().getDeal()*cartItem.getQuantity();
+            order.setSubTotalCost(subTotalCost);
             double deliveryCost = cartItem.getProduct().isFreeDelivery()?0.0:Double.parseDouble(siteConfigRepository.findByName(SiteConfigName.DELIVERY_COST.name()).get().getValue());
             order.setDeliveryCost(deliveryCost);
-            order.setTotalCost(cost+deliveryCost);
+            order.setTotalCost(subTotalCost+deliveryCost);
             orderRepository.save(order);
             cartItemRepository.deleteById(cartItem.getId());
         }
@@ -84,30 +89,34 @@ public class OrderServiceImp implements OrderService{
 
     @Override
     public OrderPageSortDto getOrdersByVendor(OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         Sort sort = orderGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(orderGetRequestDto.getSortBy()).ascending():Sort.by(orderGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(orderGetRequestDto.getPageNumber(),orderGetRequestDto.getPageSize(),sort);
-        Page<Order> orders = orderRepository.findAllByVendorProfileUserEmail(authentication.getName(),pageable);
+        Page<Order> orders = orderRepository.findAllByVendorId(user.getId(),pageable);
         return new OrderPageSortDto(orders.getContent().stream().map(ObjectConverter::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
     }
 
     @Override
     public OrderPageSortDto getOrdersByUser(OrderGetRequestDto orderGetRequestDto, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         Sort sort = orderGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(orderGetRequestDto.getSortBy()).ascending():Sort.by(orderGetRequestDto.getSortBy()).descending();
         Pageable pageable = PageRequest.of(orderGetRequestDto.getPageNumber(),orderGetRequestDto.getPageSize(),sort);
-        Page<Order> orders = orderRepository.findAllByUserEmail(authentication.getName(),pageable);
+        Page<Order> orders = orderRepository.findAllByUserId(user.getId(),pageable);
         return new OrderPageSortDto(orders.getContent().stream().map(ObjectConverter::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
     }
 
     @Override
     @Transactional
     public OrderResponseDto changeOrderStatus(UUID orderId, Authentication authentication) {
-        Order order = orderRepository.findByIdAndVendorProfileUserEmail(orderId,authentication.getName()).orElseThrow(OrderNotFoundException::new);
+        User authenticator = (User) authentication.getPrincipal();
+        Order order = orderRepository.findByIdAndVendorId(orderId,authenticator.getId()).orElseThrow(OrderNotFoundException::new);
+        User user = userRepository.findById(order.getUserId()).orElseThrow(UserNotFoundException::new);
         OrderStatus newOrderStatus;
         if(order.getOrderStatus()==OrderStatus.PENDING){
             newOrderStatus = OrderStatus.PROCESSING;
             Notification notification = new Notification();
             notification.setSeen(false);
-            notification.setUser(order.getUser());
+            notification.setUser(user);
             notification.setNotificationType(NotificationType.ORDER);
             notification.setAttachedId(order.getId().toString());
             notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));
@@ -118,7 +127,7 @@ public class OrderServiceImp implements OrderService{
             newOrderStatus = OrderStatus.SHIPPED;
             Notification notification = new Notification();
             notification.setSeen(false);
-            notification.setUser(order.getUser());
+            notification.setUser(user);
             notification.setNotificationType(NotificationType.ORDER);
             notification.setAttachedId(order.getId().toString());
             notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));
@@ -140,9 +149,10 @@ public class OrderServiceImp implements OrderService{
         if(order.getOrderStatus()!=OrderStatus.SHIPPED){
             throw new InvalidInputException();
         }
+        User user = userRepository.findById(order.getUserId()).orElseThrow(UserNotFoundException::new);
         Notification notification = new Notification();
         notification.setSeen(false);
-        notification.setUser(order.getUser());
+        notification.setUser(user);
         notification.setNotificationType(NotificationType.ORDER);
         notification.setAttachedId(order.getId().toString());
         notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));
@@ -151,8 +161,9 @@ public class OrderServiceImp implements OrderService{
         order.setOrderStatus(OrderStatus.DELIVERED);
         Order newOrder = orderRepository.save(order);
         ReviewPass reviewPass = new ReviewPass();
-        reviewPass.setProduct(newOrder.getProduct());
-        reviewPass.setUser(newOrder.getUser());
+        Product product = productRepository.findById(newOrder.getProductId()).orElseThrow(ProductNotFoundException::new);
+        reviewPass.setProduct(product);
+        reviewPass.setUser(user);
         reviewPassRepository.save(reviewPass);
         return ObjectConverter.mapOrderToOrderDto(newOrder);
     }
@@ -161,15 +172,17 @@ public class OrderServiceImp implements OrderService{
     @Transactional
     public OrderResponseDto cancelOrder(UUID orderId, Authentication authentication) {
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        User Authenticator = (User) authentication.getPrincipal();
         if(order.getOrderStatus()==OrderStatus.CANCELLED || order.getOrderStatus()==OrderStatus.DELIVERED){
             throw new InvalidInputException();
         }
-        if(!order.getUser().getEmail().equals(authentication.getName()) && !order.getVendorProfile().getUser().getEmail().equals(authentication.getName())){
+        if(!order.getUserId().equals(Authenticator.getId()) && !order.getVendorId().equals(Authenticator.getId())){
             throw new UnauthorizeAccessException();
         }
+        User user = userRepository.findById(order.getUserId()).orElseThrow(UserNotFoundException::new);
         Notification notification = new Notification();
         notification.setSeen(false);
-        notification.setUser(order.getUser());
+        notification.setUser(user);
         notification.setNotificationType(NotificationType.ORDER);
         notification.setAttachedId(order.getId().toString());
         notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));

@@ -12,9 +12,9 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    Page<Order> findAllByVendorProfileUserEmail(String email, Pageable pageable);
+    Page<Order> findAllByVendorId(UUID vendorId, Pageable pageable);
 
-    Page<Order> findAllByUserEmail(String email, Pageable pageable);
+    Page<Order> findAllByUserId(UUID userId, Pageable pageable);
 
-    Optional<Order> findByIdAndVendorProfileUserEmail(UUID orderId,String email);
+    Optional<Order> findByIdAndVendorId(UUID orderId, UUID vendorId);
 }

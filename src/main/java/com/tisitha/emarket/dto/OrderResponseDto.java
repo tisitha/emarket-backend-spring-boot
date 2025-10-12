@@ -1,6 +1,7 @@
 package com.tisitha.emarket.dto;
 
 import com.tisitha.emarket.model.*;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,25 +16,29 @@ public class OrderResponseDto {
 
     private UUID id;
 
-    private UserResponseDto user;
+    private UUID userId;
 
     private OrderStatus orderStatus;
 
-    private PaymentMethodResponseDto paymentMethod;
+    private String paymentMethodName;
 
-    private ProductResponseDto product;
+    private UUID productId;
 
-    private VendorProfileDto vendorProfile;
+    private String productName;
+
+    private Double cost;
+
+    private UUID vendorId;
+
+    private String vendorName;
 
     private Date date;
 
     private Integer quantity;
 
-    private Double cost;
+    private Double subTotalCost;
 
     private Double deliveryCost;
 
     private Double totalCost;
-
-
 }

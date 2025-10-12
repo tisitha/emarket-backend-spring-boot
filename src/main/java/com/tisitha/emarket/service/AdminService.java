@@ -33,4 +33,8 @@ public interface AdminService {
     Double getDeliveryCost();
 
     Double changeDeliveryCost(Double cost);
+
+    OrderPageSortDto getOrders(AdminPanelGetDto adminPanelGetDto);
+
+    OrderResponseDto getOrder(UUID orderId);
 }

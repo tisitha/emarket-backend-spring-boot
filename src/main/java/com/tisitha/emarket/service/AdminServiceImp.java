@@ -26,6 +26,7 @@ public class AdminServiceImp implements AdminService{
     private final ProvinceRepository provinceRepository;
     private final PasswordEncoder passwordEncoder;
     private final SiteConfigRepository siteConfigRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public ProductPageSortDto getProducts(AdminPanelGetDto adminPanelGetDto) {
@@ -155,5 +156,19 @@ public class AdminServiceImp implements AdminService{
         deliveryCostConfig.setValue(String.valueOf(cost));
         SiteConfig newDeliveryCostConfig = siteConfigRepository.save(deliveryCostConfig);
         return Double.parseDouble(newDeliveryCostConfig.getValue());
+    }
+
+    @Override
+    public OrderPageSortDto getOrders(AdminPanelGetDto adminPanelGetDto) {
+        Sort sort = adminPanelGetDto.getDir().equalsIgnoreCase("asc")?Sort.by(adminPanelGetDto.getSortBy()).ascending():Sort.by(adminPanelGetDto.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(adminPanelGetDto.getPageNumber(),adminPanelGetDto.getPageSize(),sort);
+        Page<Order> orders = orderRepository.findAll(pageable);
+        return new OrderPageSortDto(orders.getContent().stream().map(ObjectConverter::mapOrderToOrderDto).toList(),orders.getTotalElements(),orders.getTotalPages(),orders.isLast());
+    }
+
+    @Override
+    public OrderResponseDto getOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        return ObjectConverter.mapOrderToOrderDto(order);
     }
 }

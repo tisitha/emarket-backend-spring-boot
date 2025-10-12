@@ -93,4 +93,14 @@ public class AdminController {
         return new ResponseEntity<>(adminService.changeDeliveryCost(cost),HttpStatus.OK);
     }
 
+    @PostMapping("/orders")
+    ResponseEntity<OrderPageSortDto> getOrders(@RequestBody AdminPanelGetDto adminPanelGetDto){
+        return new ResponseEntity<>(adminService.getOrders(adminPanelGetDto),HttpStatus.OK);
+    }
+
+    @GetMapping("/order/{questionId}")
+    ResponseEntity<OrderResponseDto> getOrders(@PathVariable UUID orderId){
+        return new ResponseEntity<>(adminService.getOrder(orderId),HttpStatus.OK);
+    }
+
 }
