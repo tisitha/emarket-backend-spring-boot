@@ -7,6 +7,7 @@ import com.tisitha.emarket.repo.ProvinceRepository;
 import com.tisitha.emarket.repo.UserRepository;
 import com.tisitha.emarket.repo.VendorProfileRepository;
 import com.tisitha.emarket.util.JWTUtil;
+import com.tisitha.emarket.util.ObjectConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +29,12 @@ public class UserServiceImp implements UserService{
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final SupabaseService supabaseService;
+
+    @Override
+    public AccountResponseDto getUser(Authentication authentication) {
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new);
+        return ObjectConverter.mapAccountToAccountDto(user);
+    }
 
     @Override
     public void registerUserAccount(UserRegisterDto userRegisterDto) {

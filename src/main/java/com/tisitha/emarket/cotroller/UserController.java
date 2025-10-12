@@ -21,6 +21,11 @@ public class UserController {
         this.forgotPasswordService = forgotPasswordService;
     }
 
+    @GetMapping("/user/profile")
+    public ResponseEntity<AccountResponseDto> getUser(Authentication authentication){
+        return new ResponseEntity<>(userService.getUser(authentication),HttpStatus.OK);
+    }
+
     @PostMapping("/auth/register-user")
     public ResponseEntity<Void> registerUserAccount(@Valid @RequestBody UserRegisterDto userRegisterDto){
         userService.registerUserAccount(userRegisterDto);

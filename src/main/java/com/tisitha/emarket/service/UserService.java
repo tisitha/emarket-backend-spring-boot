@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface UserService {
 
+    AccountResponseDto getUser(Authentication authentication);
+
     void registerUserAccount(UserRegisterDto userRegisterDto);
 
     void registerVendorAccount(VendorRegisterDto vendorRegisterDto);
