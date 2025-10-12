@@ -1,10 +1,7 @@
 package com.tisitha.emarket.service;
 
 import com.tisitha.emarket.dto.*;
-import com.tisitha.emarket.exception.InvalidInputException;
-import com.tisitha.emarket.exception.OrderNotFoundException;
-import com.tisitha.emarket.exception.PaymentMethodNotFoundException;
-import com.tisitha.emarket.exception.UnauthorizeAccessException;
+import com.tisitha.emarket.exception.*;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.*;
 import com.tisitha.emarket.util.ObjectConverter;
@@ -67,7 +64,7 @@ public class OrderServiceImp implements OrderService{
                 notificationRepository.save(notification);
                 notification.setUser(cartItem.getProduct().getVendorProfile().getUser());
                 notificationRepository.save(notification);
-                continue;
+                throw new ProductOutOfStockException();
             }
             product.setQuantity(product.getQuantity()-cartItem.getQuantity());
             productRepository.save(product);
