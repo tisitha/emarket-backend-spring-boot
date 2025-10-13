@@ -74,7 +74,7 @@ public class OrderServiceImp implements OrderService{
             order.setProductId(product.getId());
             order.setProductName(product.getName());
             order.setCost(product.getDeal()==0?product.getPrice():product.getDeal());
-            order.setVendorId(cartItem.getProduct().getVendorProfile().getVendorId());
+            order.setVendorId(cartItem.getProduct().getVendorProfile().getId());
             order.setVendorName(cartItem.getProduct().getVendorProfile().getBusinessName());
             order.setDate(new Date());
             double subTotalCost = cartItem.getProduct().getDeal()==0?cartItem.getProduct().getPrice()*cartItem.getQuantity():cartItem.getProduct().getDeal()*cartItem.getQuantity();

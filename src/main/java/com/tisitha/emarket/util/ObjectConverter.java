@@ -52,7 +52,7 @@ public class ObjectConverter {
 
     public static VendorProfileDto mapVendorToVendorDto(VendorProfile vendorProfile){
         return new VendorProfileDto(
-                vendorProfile.getVendorId(),
+                vendorProfile.getId(),
                 vendorProfile.getBusinessName());
     }
 

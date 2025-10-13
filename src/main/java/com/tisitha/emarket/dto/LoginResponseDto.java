@@ -7,11 +7,13 @@ import java.util.UUID;
 @Data
 public class LoginResponseDto {
 
-    UUID id;
+    private UUID id;
 
-    String name;
+    private String name;
 
-    String role;
+    private String role;
 
-    String token;
+    private String token;
+
+    private String email;
 }

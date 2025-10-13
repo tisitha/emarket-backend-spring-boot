@@ -97,6 +97,7 @@ public class UserServiceImp implements UserService{
         loginResponseDto.setName(user.getFname());
         loginResponseDto.setRole(user.getRole().name());
         loginResponseDto.setToken(accessToken);
+        loginResponseDto.setEmail(user.getEmail());
         return loginResponseDto;
     }
 
@@ -148,7 +149,7 @@ public class UserServiceImp implements UserService{
     @Override
     @Transactional
     public void userUpdateToVendor(UserToVendorUpdateDto userToVendorUpdateDto, Authentication authentication) {
-        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),userToVendorUpdateDto.getCurrentPassword())).isAuthenticated()){
+        if(!authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentication.getName(),userToVendorUpdateDto.getPassword())).isAuthenticated()){
             throw new UnauthorizeAccessException();
         }
         User user = (User) authentication.getPrincipal();
@@ -173,6 +174,7 @@ public class UserServiceImp implements UserService{
         }
         User user = (User) authentication.getPrincipal();
         user.setRole(Role.ROLE_USER);
+        user.setVendorProfile(null);
         userRepository.save(user);
         vendorProfileRepository.deleteById(user.getId());
     }

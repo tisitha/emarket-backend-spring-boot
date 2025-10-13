@@ -94,7 +94,7 @@ public class ProductServiceImp implements ProductService{
             List<Warranty> warranties = warrantyRepository.findAll();
             productGetRequestDto.setWarrantyIds(warranties.stream().map(Warranty::getId).toList());
         }
-        Page<Product> productsPage = productRepository.findAllByFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqualAndVendorProfileVendorId(
+        Page<Product> productsPage = productRepository.findAllByFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqualAndVendorProfileId(
                 productGetRequestDto.isFreeDelivery()?List.of(true):List.of(true,false),
                 productGetRequestDto.isCod()?List.of(true):List.of(true,false),
                 productGetRequestDto.getProvinceIds(),

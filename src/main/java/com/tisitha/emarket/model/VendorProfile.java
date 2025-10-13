@@ -16,7 +16,7 @@ import java.util.UUID;
 public class VendorProfile {
 
     @Id
-    private UUID vendorId;
+    private UUID id;
 
     @OneToOne
     @MapsId

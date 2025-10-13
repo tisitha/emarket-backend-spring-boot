@@ -24,7 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             int minQuantity,
             Pageable pageable);
 
-    Page<Product> findAllByFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqualAndVendorProfileVendorId(
+    Page<Product> findAllByFreeDeliveryInAndCodInAndProvinceIdInAndWarrantyIdInAndPriceGreaterThanEqualAndPriceLessThanEqualAndQuantityGreaterThanEqualAndVendorProfileId(
             List<Boolean> freeDeliveries,
             List<Boolean> cods,
             List<Long> provinces,

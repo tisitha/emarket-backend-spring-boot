@@ -20,5 +20,5 @@ public class UserToVendorUpdateDto {
 
     @NotBlank(message = "Current Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
-    private String currentPassword;
+    private String password;
 }
