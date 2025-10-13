@@ -187,7 +187,7 @@ public class UserServiceImp implements UserService{
         if(!newPasswordRequestDto.getPassword().equals(newPasswordRequestDto.getPasswordRepeat())){
             throw new PasswordNotMatchException();
         }
-        user.setPassword(newPasswordRequestDto.getPassword());
+        user.setPassword(passwordEncoder.encode(newPasswordRequestDto.getPassword()));
         userRepository.save(user);
     }
 

@@ -79,6 +79,12 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/user/vendortouser-update")
+    public ResponseEntity<Void> vendorUpdateToUser(@Valid @RequestBody PasswordDTO passwordDTO, Authentication authentication) {
+        userService.vendorUpdateToUser(passwordDTO,authentication);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/user/password")
     public ResponseEntity<Void> updatePassword(@RequestBody NewPasswordRequestDto newPasswordRequestDto, Authentication authentication){
         userService.updatePassword(newPasswordRequestDto, authentication);
