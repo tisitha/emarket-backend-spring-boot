@@ -155,14 +155,13 @@ public class UserServiceImp implements UserService{
         if(vendorProfileRepository.existsById(user.getId())){
             throw new InvalidInputException();
         }
+        user.setRole(Role.ROLE_VENDOR);
+        User newUser = userRepository.save(user);
         VendorProfile vendorProfile = new VendorProfile();
-        vendorProfile.setVendorId(user.getId());
         vendorProfile.setBusinessName(userToVendorUpdateDto.getBusinessName());
         vendorProfile.setBankAccountNo(userToVendorUpdateDto.getBankAccountNo());
         vendorProfile.setBank(userToVendorUpdateDto.getBank());
-        user.setRole(Role.ROLE_VENDOR);
-        user.setVendorProfile(vendorProfile);
-        vendorProfile.setUser(userRepository.save(user));
+        vendorProfile.setUser(newUser);
         vendorProfileRepository.save(vendorProfile);
     }
 
