@@ -35,13 +35,18 @@ public class ProductServiceImp implements ProductService{
     public ProductPageSortDto getProducts(ProductGetRequestDto productGetRequestDto) {
         List<Long> categoryIds = new ArrayList<>();
         Stack<Long> stack = new Stack<>();
-        stack.push(productGetRequestDto.getCategoryId());
-        while(!stack.empty()){
-            Long currentCategoryId = stack.pop();
-            categoryIds.add(currentCategoryId);
-            List<Long> list = categoryRepository.findIdsByParentId(currentCategoryId);
-            for(Long id:list){
-                stack.push(id);
+        if(productGetRequestDto.getCategoryId()==null){
+            categoryIds = categoryRepository.findAll().stream().map(Category::getId).toList();
+        }
+        else{
+            stack.push(productGetRequestDto.getCategoryId());
+            while(!stack.empty()){
+                Long currentCategoryId = stack.pop();
+                categoryIds.add(currentCategoryId);
+                List<Long> list = categoryRepository.findIdsByParentId(currentCategoryId);
+                for(Long id:list){
+                    stack.push(id);
+                }
             }
         }
         if(productGetRequestDto.getProvinceIds().isEmpty()){
@@ -99,8 +104,8 @@ public class ProductServiceImp implements ProductService{
                 productGetRequestDto.isCod()?List.of(true):List.of(true,false),
                 productGetRequestDto.getProvinceIds(),
                 productGetRequestDto.getWarrantyIds(),
-                productGetRequestDto.getMinPrice(),
-                productGetRequestDto.getMaxPrice(),
+                productGetRequestDto.getMinPrice()==null?0:productGetRequestDto.getMinPrice(),
+                productGetRequestDto.getMaxPrice()==null?Double.MAX_VALUE:productGetRequestDto.getMaxPrice(),
                 productGetRequestDto.isStockOnly()?1:0,
                 vendorId,
                 pageable

@@ -43,7 +43,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.getDealProducts(size),HttpStatus.OK);
     }
 
-    @PostMapping("/product/vendor/{vendorId}")
+    @PostMapping("/open/product/vendor/{vendorId}")
     public ResponseEntity<ProductPageSortDto> getProductsByVendor(@PathVariable UUID vendorId,@Valid  @RequestBody ProductGetRequestDto productGetRequestDto){
         return new ResponseEntity<>(productService.getProductsByVendor(vendorId,productGetRequestDto), HttpStatus.OK);
     }
