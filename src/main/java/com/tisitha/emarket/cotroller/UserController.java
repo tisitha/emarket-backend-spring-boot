@@ -49,7 +49,7 @@ public class UserController {
         return ResponseEntity.accepted().build();
     }
 
-    @PostMapping("/auth/varifyotp/{otp}/{email}")
+    @PostMapping("/auth/verifyotp/{otp}/{email}")
     public ResponseEntity<Void> verifyOtp(@PathVariable Integer otp,@PathVariable String email){
         forgotPasswordService.verifyOtp(otp,email);
         return ResponseEntity.accepted().build();
