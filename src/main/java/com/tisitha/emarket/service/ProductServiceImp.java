@@ -157,6 +157,7 @@ public class ProductServiceImp implements ProductService{
         category.ifPresent(product::setCategory);
         province.ifPresent(product::setProvince);
         warranty.ifPresent(product::setWarranty);
+        Optional.ofNullable(productRequestDto.getQuantity()).ifPresent(product::setQuantity);
         productRepository.save(product);
     }
 
