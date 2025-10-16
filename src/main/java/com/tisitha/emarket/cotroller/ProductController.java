@@ -65,7 +65,7 @@ public class ProductController {
     }
 
     @PutMapping("/product/{productId}")
-    public ResponseEntity<Void> updateProducts(@PathVariable UUID productId,@RequestPart String productRequestDto,@RequestPart MultipartFile file,Authentication authentication){
+    public ResponseEntity<Void> updateProducts(@PathVariable UUID productId,@RequestPart String productRequestDto,@RequestPart(required = false) MultipartFile file,Authentication authentication){
         productService.updateProduct(productId,stringToProductRequestDto(productRequestDto),file,authentication);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

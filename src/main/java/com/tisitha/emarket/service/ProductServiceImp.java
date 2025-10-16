@@ -143,7 +143,7 @@ public class ProductServiceImp implements ProductService{
         if(!product.getVendorProfile().equals(vendorProfile)){
             throw new UnauthorizeAccessException();
         }
-        if(!file.isEmpty()){
+        if(file!=null){
             String imgUrl = supabaseService.upload(user.getId().toString(),file);
             product.setImgUrl(imgUrl);
         }
@@ -168,7 +168,7 @@ public class ProductServiceImp implements ProductService{
         Province province = provinceRepository.findById(productRequestDto.getProvinceId()).orElseThrow(ProvinceNotFoundException::new);
         Warranty warranty = warrantyRepository.findById(productRequestDto.getWarrantyId()).orElseThrow(WarrantyNotFoundException::new);
         Product product = new Product();
-        if(!file.isEmpty()){
+        if(file!=null){
             String imgUrl = supabaseService.upload(user.getId().toString(),file);
             product.setImgUrl(imgUrl);
         }
