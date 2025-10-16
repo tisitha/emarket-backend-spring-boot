@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,9 +15,7 @@ public interface QuestionRepository extends JpaRepository<Question,Long> {
 
     Page<Question> findAllByProductIdAndAnswerIsNotNull(UUID productId, Pageable pageable);
 
-    Page<Question> findAllByProductIdAndAnswerIsNull(UUID productId, Pageable pageable);
-
-    Page<Question> findAllByProductVendorProfileUserEmailAndAnswerIsNull(String email, Pageable pageable);
+    List<Question> findAllByProductVendorProfileUserEmailAndAnswerIsNull(String email);
 
     Optional<Question> findByIdAndProductVendorProfileUserEmail(Long questionId, String email);
 }

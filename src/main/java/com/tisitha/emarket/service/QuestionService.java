@@ -3,11 +3,13 @@ package com.tisitha.emarket.service;
 import com.tisitha.emarket.dto.*;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
+
 public interface QuestionService {
 
     QuestionPageSortDto getAnsweredQuestionTitles(QuestionGetRequestDto questionGetRequestDto);
 
-    QuestionPageSortDto getUnansweredQuestionTitles(QuestionGetRequestDto questionGetRequestDto,Authentication authentication);
+    List<QuestionResponseDto> getUnansweredQuestionTitles(Authentication authentication);
 
     QuestionResponseDto getQuestionTitle(Long questionId);
 

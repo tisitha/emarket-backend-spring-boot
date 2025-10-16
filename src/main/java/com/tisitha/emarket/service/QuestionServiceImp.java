@@ -3,6 +3,7 @@ package com.tisitha.emarket.service;
 import com.tisitha.emarket.dto.*;
 import com.tisitha.emarket.exception.ProductNotFoundException;
 import com.tisitha.emarket.exception.QuestionNotFoundException;
+import com.tisitha.emarket.exception.UnauthorizeAccessException;
 import com.tisitha.emarket.exception.UserNotFoundException;
 import com.tisitha.emarket.model.*;
 import com.tisitha.emarket.repo.NotificationRepository;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,16 +48,9 @@ public class QuestionServiceImp implements QuestionService{
     }
 
     @Override
-    public QuestionPageSortDto getUnansweredQuestionTitles(QuestionGetRequestDto questionGetRequestDto, Authentication authentication) {
-        Sort sort = questionGetRequestDto.getDir().equalsIgnoreCase("asc")?Sort.by(questionGetRequestDto.getSortBy()).ascending():Sort.by(questionGetRequestDto.getSortBy()).descending();
-        Pageable pageable = PageRequest.of(questionGetRequestDto.getPageNumber(),questionGetRequestDto.getPageSize(),sort);
-        Page<Question> questions =questionRepository.findAllByProductVendorProfileUserEmailAndAnswerIsNull(authentication.getName(),pageable);
-        return new QuestionPageSortDto(
-                questions.getContent().stream().map(ObjectConverter::mapQuestionToQuestionDto).toList(),
-                questions.getTotalElements(),
-                questions.getTotalPages(),
-                questions.isLast()
-        );
+    public List<QuestionResponseDto> getUnansweredQuestionTitles(Authentication authentication) {
+        List<Question> questions = questionRepository.findAllByProductVendorProfileUserEmailAndAnswerIsNull(authentication.getName());
+        return questions.stream().map(ObjectConverter::mapQuestionToQuestionDto).toList();
     }
 
     @Override
@@ -96,7 +91,7 @@ public class QuestionServiceImp implements QuestionService{
         notification.setSeen(false);
         notification.setUser(question.getProduct().getVendorProfile().getUser());
         notification.setNotificationType(NotificationType.PRODUCT);
-        notification.setAttachedId(question.getProduct().toString());
+        notification.setAttachedId(question.getProduct().getId().toString());
         notification.setDateAndTime(LocalDateTime.now(ZoneId.of("+05:30")));
         notification.setMessage(question.getProduct().getName()+"\nThe vendor replied to your question.");
         notificationRepository.save(notification);
@@ -105,7 +100,10 @@ public class QuestionServiceImp implements QuestionService{
 
     @Override
     public void deleteQuestionTitle(Long questionId,Authentication authentication) {
-        questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
+        Question question = questionRepository.findById(questionId).orElseThrow(QuestionNotFoundException::new);
+        if(!question.getUser().getEmail().equals(authentication.getName()) && !question.getProduct().getVendorProfile().getUser().getEmail().equals(authentication.getName())){
+            throw new UnauthorizeAccessException();
+        }
         questionRepository.deleteById(questionId);
     }
 
