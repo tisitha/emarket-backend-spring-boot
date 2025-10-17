@@ -32,7 +32,6 @@ public class ForgotPasswordServiceImp implements ForgotPasswordService{
     @Override
     public void verifyEmail(String email){
         User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-        forgotPasswordRepository.deleteByUserId(user.getId());
         int otp = otpGenerator();
         Mailbody mailbody = Mailbody.builder()
                 .to(email)
@@ -45,8 +44,8 @@ public class ForgotPasswordServiceImp implements ForgotPasswordService{
                 .user(user)
                 .build();
         emailService.sendSimpleMessage(mailbody);
-        forgotPasswordRepository.save(fp);
-
+        user.setForgotPassword(fp);
+        userRepository.save(user);
     }
 
     @Override
