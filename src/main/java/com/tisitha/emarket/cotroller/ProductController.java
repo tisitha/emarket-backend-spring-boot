@@ -53,8 +53,8 @@ public class ProductController {
         return new ResponseEntity<>(productService.getProduct(productId), HttpStatus.OK);
     }
 
-    @GetMapping("/open/search/{text}/{size}")
-    public ResponseEntity<List<ProductResponseDto>> search(@PathVariable @NotBlank String text, @PathVariable @NotNull @Min(1) Integer size){
+    @GetMapping("/open/search")
+    public ResponseEntity<List<ProductResponseDto>> search(@RequestParam @NotBlank String text, @RequestParam @NotNull @Min(1) Integer size){
         return new ResponseEntity<>(productService.search(text, size), HttpStatus.OK);
     }
 
