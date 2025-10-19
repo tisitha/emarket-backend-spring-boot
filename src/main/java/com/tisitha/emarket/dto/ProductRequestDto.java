@@ -11,9 +11,10 @@ import lombok.NoArgsConstructor;
 public class ProductRequestDto {
 
     @NotBlank
-    @Size(max = 250)
+    @Size(max = 200)
     private String name;
 
+    @Size(max = 5000)
     private String description;
 
     @DecimalMin(value = "0.00", inclusive = true)

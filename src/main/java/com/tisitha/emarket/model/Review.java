@@ -18,6 +18,7 @@ public class Review {
     private Long id;
 
     @Column(nullable = false)
+    @Lob
     private String body;
 
     @Column(nullable = false)

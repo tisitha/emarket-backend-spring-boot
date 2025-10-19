@@ -30,6 +30,7 @@ public class Product {
     private String imgUrl;
 
     @Column(nullable = false)
+    @Lob
     private String description;
 
     @Column(nullable = false)
