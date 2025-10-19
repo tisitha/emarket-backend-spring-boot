@@ -17,8 +17,7 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
-    @Lob
+    @Column(nullable = false,columnDefinition = "TEXT")
     private String body;
 
     @Column(nullable = false)
