@@ -150,7 +150,7 @@ public class ProductServiceImp implements ProductService{
         Optional.ofNullable(productRequestDto.getName()).ifPresent(product::setName);
         Optional.ofNullable(productRequestDto.getDescription()).ifPresent(product::setDescription);
         Optional.ofNullable(productRequestDto.getPrice()).ifPresent(product::setPrice);
-        Optional.ofNullable(productRequestDto.getDeal()).ifPresent(product::setDeal);
+        product.setDeal(productRequestDto.getDeal());
         Optional.ofNullable(productRequestDto.getCod()).ifPresent(product::setCod);
         Optional.ofNullable(productRequestDto.getFreeDelivery()).ifPresent(product::setFreeDelivery);
         Optional.ofNullable(productRequestDto.getBrand()).ifPresent(product::setBrand);
